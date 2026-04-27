@@ -15,6 +15,7 @@ _SYSTEM_PROMPT = """\
 You are a business intelligence assistant. Your job is to read website text and identify the most likely business owner, founder, or principal — not a manager, employee, or receptionist.
 
 Return ONLY a valid JSON object. No markdown, no explanation, just JSON.
+All field values must be clean data — no qualifiers, notes, or uncertainty markers.
 """
 
 _USER_TEMPLATE = """\
@@ -29,7 +30,7 @@ Identify:
 2. The best contact email (owner's direct email preferred; generic like info@, contact@, hello@ are acceptable if no personal email is found).
 
 Return exactly this JSON structure:
-{{"owner_name": "Full Name or null", "email": "email@domain.com or null", "confidence": "high|medium|low", "reasoning": "one sentence"}}
+{{"owner_name": "First Last or null — name only, no qualifiers, no parentheses, no 'likely'", "email": "email@domain.com or null", "confidence": "high|medium|low", "reasoning": "one sentence"}}
 """
 
 
@@ -81,11 +82,18 @@ def _parse_response(raw: str) -> dict:
             return _empty_result("no_json_found")
 
     return {
-        "owner_name": parsed.get("owner_name") or None,
+        "owner_name": _clean_name(parsed.get("owner_name")),
         "email": _validate_email(parsed.get("email")),
         "confidence": parsed.get("confidence") or "low",
         "reasoning": parsed.get("reasoning") or "",
     }
+
+
+def _clean_name(name: Optional[str]) -> Optional[str]:
+    if not name or not isinstance(name, str):
+        return None
+    name = re.sub(r"\s*\(.*?\)", "", name).strip()
+    return name or None
 
 
 def _validate_email(email: Optional[str]) -> Optional[str]:
