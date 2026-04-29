@@ -8,6 +8,7 @@ Usage examples:
 """
 
 import argparse
+import asyncio
 import sys
 
 
@@ -39,7 +40,7 @@ def main() -> None:
             print("Aborted.")
             sys.exit(0)
 
-    csv_path = run(query=args.query, limit=args.limit, output_label=args.label)
+    csv_path = asyncio.run(run(query=args.query, limit=args.limit, output_label=args.label))
 
     if csv_path:
         print(f"\nDone. Output saved to: {csv_path}")

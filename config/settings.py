@@ -8,6 +8,12 @@ GROQ_API_KEY: str = os.environ["GROQ_API_KEY"]
 
 GROQ_MODEL: str = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
 
+LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "groq")  # groq | cerebras
+CEREBRAS_API_KEY: str = os.getenv("CEREBRAS_API_KEY", "")
+CEREBRAS_MODEL: str = os.getenv("CEREBRAS_MODEL", "llama-3.3-70b")
+
+MAX_CONCURRENT_LEADS: int = int(os.getenv("MAX_CONCURRENT_LEADS", "10"))
+
 CRAWL_MAX_DEPTH: int = int(os.getenv("CRAWL_MAX_DEPTH", "2"))
 CRAWL_MAX_PAGES: int = int(os.getenv("CRAWL_MAX_PAGES", "10"))
 CRAWL_DELAY_SECONDS: float = float(os.getenv("CRAWL_DELAY_SECONDS", "1.0"))

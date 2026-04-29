@@ -1,9 +1,9 @@
+import asyncio
 import re
-import time
 from typing import Dict, List, Set
 from urllib.parse import urljoin, urlparse, urlunparse
 
-import requests
+import httpx
 from bs4 import BeautifulSoup
 
 import config.settings as settings
@@ -32,7 +32,7 @@ _BLOCKED_DOMAINS = {
 }
 
 
-def crawl_domain(start_url: str) -> str:
+async def crawl_domain(start_url: str) -> str:
     """
     Crawls start_url and same-domain links up to CRAWL_MAX_DEPTH.
     Returns concatenated visible text from all crawled pages (truncated to ~50k chars).
@@ -45,67 +45,66 @@ def crawl_domain(start_url: str) -> str:
     if domain in _BLOCKED_DOMAINS:
         logger.info(f"Skipping blocked domain: {domain}")
         return ""
-    visited: Set[str] = set()
-    queue: List[tuple[str, int]] = []  # (url, depth)
 
-    # Seed queue: priority pages first, then homepage
+    visited: Set[str] = set()
+    queue: List[tuple[str, int]] = []
+
     queue.append((base, 0))
     for path in _PRIORITY_PATHS:
         queue.append((urljoin(base, path), 1))
 
     page_texts: Dict[str, str] = {}
 
-    while queue and len(page_texts) < settings.CRAWL_MAX_PAGES:
-        url, depth = queue.pop(0)
-        url = _normalize_url(url)
-        if not url or url in visited:
-            continue
-        if urlparse(url).netloc != domain:
-            continue
+    async with httpx.AsyncClient(
+        headers=_HEADERS,
+        timeout=settings.REQUEST_TIMEOUT_SECONDS,
+        follow_redirects=True,
+    ) as client:
+        while queue and len(page_texts) < settings.CRAWL_MAX_PAGES:
+            url, depth = queue.pop(0)
+            url = _normalize_url(url)
+            if not url or url in visited:
+                continue
+            if urlparse(url).netloc != domain:
+                continue
 
-        visited.add(url)
-        logger.debug(f"Crawling [{depth}] {url}")
+            visited.add(url)
+            logger.debug(f"Crawling [{depth}] {url}")
 
-        html, ok = _fetch(url)
-        if not ok:
-            continue
+            html, ok = await _fetch(client, url)
+            if not ok:
+                continue
 
-        text = _extract_text(html)
-        if text:
-            page_texts[url] = text
+            text = _extract_text(html)
+            if text:
+                page_texts[url] = text
 
-        if depth < settings.CRAWL_MAX_DEPTH:
-            links = _extract_same_domain_links(html, url, domain)
-            for link in links:
-                if link not in visited and len(queue) < 200:
-                    queue.append((link, depth + 1))
+            if depth < settings.CRAWL_MAX_DEPTH:
+                links = _extract_same_domain_links(html, url, domain)
+                for link in links:
+                    if link not in visited and len(queue) < 200:
+                        queue.append((link, depth + 1))
 
-        time.sleep(settings.CRAWL_DELAY_SECONDS)
+            await asyncio.sleep(settings.CRAWL_DELAY_SECONDS)
 
     combined = "\n\n---\n\n".join(
         f"[PAGE: {url}]\n{text}" for url, text in page_texts.items()
     )
     logger.info(f"Crawled {len(page_texts)} pages from {domain} ({len(combined)} chars)")
 
-    # Truncate to keep LLM context manageable (~50k chars ≈ ~12k tokens)
     return combined[:50_000]
 
 
-def _fetch(url: str) -> tuple[str, bool]:
+async def _fetch(client: httpx.AsyncClient, url: str) -> tuple[str, bool]:
     try:
-        resp = requests.get(
-            url,
-            headers=_HEADERS,
-            timeout=settings.REQUEST_TIMEOUT_SECONDS,
-            allow_redirects=True,
-        )
+        resp = await client.get(url)
         if resp.status_code == 200:
             content_type = resp.headers.get("content-type", "")
             if "html" in content_type:
                 return resp.text, True
         logger.debug(f"Skipped {url} (status={resp.status_code})")
         return "", False
-    except requests.RequestException as exc:
+    except httpx.RequestError as exc:
         logger.debug(f"Fetch error {url}: {exc}")
         return "", False
 
@@ -136,7 +135,6 @@ def _extract_same_domain_links(html: str, base_url: str, domain: str) -> List[st
 def _normalize_url(url: str) -> str:
     try:
         p = urlparse(url)
-        # Drop fragment, normalize scheme
         normalized = urlunparse((p.scheme, p.netloc.lower(), p.path.rstrip("/") or "/", p.params, p.query, ""))
         return normalized
     except Exception:

@@ -2,14 +2,27 @@ import json
 import re
 from typing import Optional
 
-from groq import Groq
+from openai import AsyncOpenAI
 
 import config.settings as settings
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-_client = Groq(api_key=settings.GROQ_API_KEY)
+
+def _build_client() -> AsyncOpenAI:
+    if settings.LLM_PROVIDER == "cerebras":
+        return AsyncOpenAI(
+            api_key=settings.CEREBRAS_API_KEY,
+            base_url="https://api.cerebras.ai/v1",
+        )
+    return AsyncOpenAI(
+        api_key=settings.GROQ_API_KEY,
+        base_url="https://api.groq.com/openai/v1",
+    )
+
+
+_client = _build_client()
 
 _SYSTEM_PROMPT = """\
 You are a business intelligence assistant. Your job is to read website text and identify the most likely business owner, founder, or principal — not a manager, employee, or receptionist.
@@ -34,20 +47,17 @@ Return exactly this JSON structure:
 """
 
 
-def extract_owner(website_url: str, page_text: str) -> dict:
-    """
-    Calls the Groq LLM and returns a dict with keys:
-      owner_name, email, confidence, reasoning
-    All values may be None if not found.
-    """
+async def extract_owner(website_url: str, page_text: str) -> dict:
+    """Calls the configured LLM provider and returns owner_name, email, confidence, reasoning."""
     if not page_text.strip():
         return _empty_result("no page text")
 
+    model = settings.CEREBRAS_MODEL if settings.LLM_PROVIDER == "cerebras" else settings.GROQ_MODEL
     prompt = _USER_TEMPLATE.format(url=website_url, text=page_text[:40_000])
 
     try:
-        response = _client.chat.completions.create(
-            model=settings.GROQ_MODEL,
+        response = await _client.chat.completions.create(
+            model=model,
             messages=[
                 {"role": "system", "content": _SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
@@ -64,13 +74,11 @@ def extract_owner(website_url: str, page_text: str) -> dict:
 
 
 def _parse_response(raw: str) -> dict:
-    # Strip markdown code fences if the model adds them
     raw = re.sub(r"```(?:json)?", "", raw).strip().rstrip("`").strip()
 
     try:
         parsed = json.loads(raw)
     except json.JSONDecodeError:
-        # Try extracting the first {...} block as a fallback
         match = re.search(r"\{.*\}", raw, re.DOTALL)
         if match:
             try:
