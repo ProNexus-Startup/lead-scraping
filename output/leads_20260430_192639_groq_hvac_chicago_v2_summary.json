@@ -1,0 +1,33 @@
+{
+  "run": {
+    "query": "HVAC companies in Chicago IL",
+    "provider": "groq",
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "duration_seconds": 108.5
+  },
+  "volume": {
+    "total": 10,
+    "success": 5,
+    "success_rate_pct": 50.0,
+    "email_fill_rate_pct": 30.0,
+    "owner_name_fill_rate_pct": 40.0,
+    "email_count": 3,
+    "name_count": 4
+  },
+  "confidence": {
+    "high": 2,
+    "medium": 2,
+    "low": 1,
+    "high_pct": 40.0,
+    "medium_pct": 40.0,
+    "low_pct": 20.0
+  },
+  "pipeline_status": {
+    "no_website": 0,
+    "crawl_failed": 0,
+    "llm_failed": 5,
+    "no_website_pct": 0.0,
+    "crawl_failed_pct": 0.0,
+    "llm_failed_pct": 50.0
+  }
+}

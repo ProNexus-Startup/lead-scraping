@@ -1,0 +1,33 @@
+{
+  "run": {
+    "query": "HVAC companies in Chicago IL",
+    "provider": "cerebras",
+    "model": "llama3.1-8b",
+    "duration_seconds": 35.4
+  },
+  "volume": {
+    "total": 10,
+    "success": 8,
+    "success_rate_pct": 80.0,
+    "email_fill_rate_pct": 50.0,
+    "owner_name_fill_rate_pct": 80.0,
+    "email_count": 5,
+    "name_count": 8
+  },
+  "confidence": {
+    "high": 8,
+    "medium": 0,
+    "low": 0,
+    "high_pct": 100.0,
+    "medium_pct": 0.0,
+    "low_pct": 0.0
+  },
+  "pipeline_status": {
+    "no_website": 0,
+    "crawl_failed": 0,
+    "llm_failed": 2,
+    "no_website_pct": 0.0,
+    "crawl_failed_pct": 0.0,
+    "llm_failed_pct": 20.0
+  }
+}

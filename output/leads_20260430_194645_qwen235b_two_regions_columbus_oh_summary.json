@@ -1,0 +1,33 @@
+{
+  "run": {
+    "query": "HVAC companies in Columbus OH",
+    "provider": "cerebras",
+    "model": "qwen-3-235b-a22b-instruct-2507",
+    "duration_seconds": 127.6
+  },
+  "volume": {
+    "total": 5,
+    "success": 4,
+    "success_rate_pct": 80.0,
+    "email_fill_rate_pct": 80.0,
+    "owner_name_fill_rate_pct": 40.0,
+    "email_count": 4,
+    "name_count": 2
+  },
+  "confidence": {
+    "high": 2,
+    "medium": 0,
+    "low": 2,
+    "high_pct": 50.0,
+    "medium_pct": 0.0,
+    "low_pct": 50.0
+  },
+  "pipeline_status": {
+    "no_website": 0,
+    "crawl_failed": 0,
+    "llm_failed": 1,
+    "no_website_pct": 0.0,
+    "crawl_failed_pct": 0.0,
+    "llm_failed_pct": 20.0
+  }
+}

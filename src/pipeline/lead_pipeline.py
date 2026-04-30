@@ -78,14 +78,18 @@ async def _process_lead(lead: Lead, semaphore: asyncio.Semaphore) -> None:
         result = await extract_owner(lead.website, page_text)
 
         lead.owner_name = result.get("owner_name")
+        lead.owner_source_page = result.get("owner_source_url")
         lead.owner_email = result.get("email")
+        lead.email_source_page = result.get("email_source_url")
         lead.llm_confidence = result.get("confidence")
+        lead.llm_reasoning = result.get("reasoning")
 
         if lead.owner_name or lead.owner_email:
             lead.status = "success"
             logger.info(
-                f"  Found: {lead.owner_name} <{lead.owner_email}> (confidence={lead.llm_confidence})"
+                f"  Found: {lead.owner_name} <{lead.owner_email}> "
+                f"(confidence={lead.llm_confidence}) — {lead.llm_reasoning}"
             )
         else:
             lead.status = "llm_failed"
-            logger.info(f"  LLM could not identify owner. Reason: {result.get('reasoning')}")
+            logger.info(f"  LLM could not identify owner for {lead.website}. Reason: {lead.llm_reasoning}")
