@@ -1,0 +1,33 @@
+{
+  "run": {
+    "query": "plumbers in Austin TX",
+    "provider": "groq",
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "duration_seconds": 102.3
+  },
+  "volume": {
+    "total": 20,
+    "success": 8,
+    "success_rate_pct": 40.0,
+    "email_fill_rate_pct": 15.0,
+    "owner_name_fill_rate_pct": 35.0,
+    "email_count": 3,
+    "name_count": 7
+  },
+  "confidence": {
+    "high": 6,
+    "medium": 1,
+    "low": 1,
+    "high_pct": 75.0,
+    "medium_pct": 12.5,
+    "low_pct": 12.5
+  },
+  "pipeline_status": {
+    "no_website": 0,
+    "crawl_failed": 1,
+    "llm_failed": 11,
+    "no_website_pct": 0.0,
+    "crawl_failed_pct": 5.0,
+    "llm_failed_pct": 55.0
+  }
+}

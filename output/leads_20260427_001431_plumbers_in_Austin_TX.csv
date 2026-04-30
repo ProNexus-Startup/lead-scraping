@@ -1,0 +1,4 @@
+business_name,category,phone,address,website,rating,reviews_count,owner_name,owner_email,llm_confidence,scraped_at,status
+Daniel's Plumbing and Air Conditioning,Plumber,+15124563570,"Daniel's Plumbing and Air Conditioning, 2929 Longhorn Blvd #105, Austin, TX 78758",https://www.danielsaustin.com/?utm_source=GMB&utm_medium=organic&utm_campaign=austin,4.7,2817,Daniel (likely Daniel Austin),,medium,2026-04-27T00:13:17.839012+00:00,success
+Reliant Plumbing,Plumber,+15122226029,"Reliant Plumbing, 3841 Ranch Rd 620 S, Austin, TX 78738",https://reliantplumbing.com/?utm_source=google&utm_medium=website&utm_campaign=hqgbp&utm_id=beecave-GBP,4.7,2891,,,low,2026-04-27T00:13:17.840013+00:00,llm_failed
+Austin's Greatest Plumbing,Plumber,+15123779919,"Austin's Greatest Plumbing, 2210 Melissa Oaks Ln, Austin, TX 78744",https://austinsgreatestplumbing.com/,5.0,245,,,low,2026-04-27T00:13:17.840013+00:00,llm_failed

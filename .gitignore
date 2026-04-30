@@ -1,6 +1,4 @@
 # Project-specific
-output/*.csv
-output/*_summary.json
 logs/*.log
 .env
 CLAUDE.md

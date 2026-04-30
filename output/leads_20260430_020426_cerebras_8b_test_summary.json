@@ -1,0 +1,33 @@
+{
+  "run": {
+    "query": "plumbers in Austin TX",
+    "provider": "cerebras",
+    "model": "llama3.1-8b",
+    "duration_seconds": 100.8
+  },
+  "volume": {
+    "total": 20,
+    "success": 14,
+    "success_rate_pct": 70.0,
+    "email_fill_rate_pct": 25.0,
+    "owner_name_fill_rate_pct": 70.0,
+    "email_count": 5,
+    "name_count": 14
+  },
+  "confidence": {
+    "high": 9,
+    "medium": 0,
+    "low": 5,
+    "high_pct": 64.3,
+    "medium_pct": 0.0,
+    "low_pct": 35.7
+  },
+  "pipeline_status": {
+    "no_website": 0,
+    "crawl_failed": 1,
+    "llm_failed": 5,
+    "no_website_pct": 0.0,
+    "crawl_failed_pct": 5.0,
+    "llm_failed_pct": 25.0
+  }
+}
