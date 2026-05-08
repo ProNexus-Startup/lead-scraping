@@ -77,17 +77,24 @@ async def _process_lead(lead: Lead, semaphore: asyncio.Semaphore) -> None:
         logger.info(f"  Running LLM extraction for {lead.website}")
         result = await extract_owner(lead.website, page_text)
 
-        lead.owner_name = result.get("owner_name")
-        lead.owner_source_page = result.get("owner_source_url")
-        lead.owner_email = result.get("email")
-        lead.email_source_page = result.get("email_source_url")
-        lead.llm_confidence = result.get("confidence")
-        lead.llm_reasoning = result.get("reasoning")
+        lead.business_name_normalized       = result.get("business_name_normalized")
+        lead.owner_first_name               = result.get("owner_first_name")
+        lead.owner_last_name                = result.get("owner_last_name")
+        lead.owner_name                     = result.get("owner_name")
+        lead.owner_source_page              = result.get("owner_source_url")
+        lead.owner_email_primary            = result.get("email_primary")
+        lead.owner_email_primary_source     = result.get("email_primary_source_url")
+        lead.owner_email_secondary          = result.get("email_secondary")
+        lead.owner_email_secondary_source   = result.get("email_secondary_source_url")
+        lead.owner_email_other              = result.get("email_other")
+        lead.owner_candidates               = result.get("owner_candidates")
+        lead.llm_confidence                 = result.get("confidence")
+        lead.llm_reasoning                  = result.get("reasoning")
 
-        if lead.owner_name or lead.owner_email:
+        if lead.owner_name or lead.owner_email_primary:
             lead.status = "success"
             logger.info(
-                f"  Found: {lead.owner_name} <{lead.owner_email}> "
+                f"  Found: {lead.owner_name} <{lead.owner_email_primary}> "
                 f"(confidence={lead.llm_confidence}) — {lead.llm_reasoning}"
             )
         else:
