@@ -185,7 +185,7 @@ async def extract_owner(website_url: str, page_text: str) -> dict:
     model = settings.CEREBRAS_MODEL if settings.LLM_PROVIDER == "cerebras" else settings.GROQ_MODEL
     messages = [
         {"role": "system", "content": _SYSTEM_PROMPT},
-        {"role": "user", "content": _USER_TEMPLATE.format(url=website_url, text=page_text[:40_000])},
+        {"role": "user", "content": _USER_TEMPLATE.format(url=website_url, text=page_text[:20_000])},
     ]
 
     try:

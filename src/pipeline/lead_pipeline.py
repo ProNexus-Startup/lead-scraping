@@ -1,6 +1,6 @@
 import asyncio
 import time
-from typing import List
+from typing import List, Set
 
 import config.settings as settings
 from src.extractors.llm_extractor import extract_owner
@@ -100,3 +100,67 @@ async def _process_lead(lead: Lead, semaphore: asyncio.Semaphore) -> None:
         else:
             lead.status = "llm_failed"
             logger.info(f"  LLM could not identify owner for {lead.website}. Reason: {lead.llm_reasoning}")
+
+
+async def run_zips(
+    query: str,
+    zip_codes: List[str],
+    limit_per_zip: int = 5,
+    output_label: str = "",
+) -> str:
+    """
+    ZIP-based pipeline: search each ZIP → deduplicate → Crawl → LLM → single CSV.
+    Returns the path to the written CSV file.
+    """
+    logger.info(
+        f"=== ZIP pipeline start: query='{query}' zips={len(zip_codes)} "
+        f"limit_per_zip={limit_per_zip} provider={settings.LLM_PROVIDER} ==="
+    )
+
+    # Phase 1: collect leads from all ZIPs, deduplicate by website (or name+address)
+    all_leads: List[Lead] = []
+    seen: Set[str] = set()
+
+    for zip_code in zip_codes:
+        zip_query = f"{query} in {zip_code}"
+        leads = search_businesses(zip_query, limit=limit_per_zip)
+        for lead in leads:
+            key = (
+                lead.website.lower()
+                if lead.website
+                else f"{lead.business_name}|{lead.address}".lower()
+            )
+            if key not in seen:
+                seen.add(key)
+                all_leads.append(lead)
+
+    if not all_leads:
+        logger.warning("No businesses returned from any ZIP. Check your API key and query.")
+        return ""
+
+    logger.info(f"Collected {len(all_leads)} unique leads across {len(zip_codes)} ZIPs")
+
+    # Phase 2: crawl + LLM
+    model = settings.CEREBRAS_MODEL if settings.LLM_PROVIDER == "cerebras" else settings.GROQ_MODEL
+    start = time.perf_counter()
+
+    semaphore = asyncio.Semaphore(settings.MAX_CONCURRENT_LEADS)
+    await asyncio.gather(*[_process_lead(lead, semaphore) for lead in all_leads])
+
+    duration = time.perf_counter() - start
+    label = output_label or query
+    csv_path = write_leads_csv(all_leads, settings.OUTPUT_DIR, label=label)
+    write_run_summary(
+        leads=all_leads,
+        csv_path=csv_path,
+        query=query,
+        provider=settings.LLM_PROVIDER,
+        model=model,
+        duration_seconds=duration,
+    )
+
+    success_count = sum(1 for l in all_leads if l.status == "success")
+    logger.info(
+        f"=== ZIP pipeline done: {len(all_leads)} total, {success_count} with owner extracted ==="
+    )
+    return csv_path
