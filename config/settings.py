@@ -19,8 +19,11 @@ CRAWL_MAX_PAGES: int = int(os.getenv("CRAWL_MAX_PAGES", "10"))
 CRAWL_DELAY_SECONDS: float = float(os.getenv("CRAWL_DELAY_SECONDS", "1.0"))
 REQUEST_TIMEOUT_SECONDS: int = int(os.getenv("REQUEST_TIMEOUT_SECONDS", "15"))
 
+ZIP_MIN_POPULATION: int = int(os.getenv("ZIP_MIN_POPULATION", "1000"))
+
 MAPS_API_HOST = "maps-data.p.rapidapi.com"
 MAPS_API_BASE_URL = f"https://{MAPS_API_HOST}"
 
-OUTPUT_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "output")
-LOGS_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "logs")
+OUTPUT_DIR   = os.path.join(os.path.dirname(os.path.dirname(__file__)), "output")
+LOGS_DIR     = os.path.join(os.path.dirname(os.path.dirname(__file__)), "logs")
+PROGRESS_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "progress")

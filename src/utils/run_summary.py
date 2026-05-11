@@ -39,7 +39,7 @@ def _compute_metrics(
     for lead in leads:
         status_counts[lead.status] = status_counts.get(lead.status, 0) + 1
 
-    email_count = sum(1 for l in leads if l.owner_email)
+    email_count = sum(1 for l in leads if l.owner_email_primary)
     name_count = sum(1 for l in leads if l.owner_name)
 
     confidence_counts = {"high": 0, "medium": 0, "low": 0}
