@@ -8,6 +8,13 @@ logger = get_logger(__name__)
 
 _WIDTH = 54
 
+# ANSI color codes — console only, never written to log files
+_GREEN  = "\033[32m"
+_YELLOW = "\033[33m"
+_RED    = "\033[31m"
+_CYAN   = "\033[36m"
+_RESET  = "\033[0m"
+
 
 def write_run_summary(
     leads: List[Lead],
@@ -98,11 +105,11 @@ def _print_summary(m: dict) -> None:
     def row(label: str, value: str) -> str:
         return f"  {label:<22}{value}"
 
-    def stat(label: str, count: int, total: int, pct: float) -> str:
-        return f"  {label:<22}{count:>4} / {total:<4}  {pct:>5.1f}%"
+    def stat(label: str, count: int, total: int, pct: float, color: str = _RESET) -> str:
+        return f"  {label:<22}{color}{count:>4} / {total:<4}  {pct:>5.1f}%{_RESET}"
 
-    def count_row(label: str, count: int, pct: float) -> str:
-        return f"  {label:<22}{count:>4}          {pct:>5.1f}%"
+    def count_row(label: str, count: int, pct: float, color: str = _RESET) -> str:
+        return f"  {label:<22}{color}{count:>4}          {pct:>5.1f}%{_RESET}"
 
     lines = [
         "",
@@ -114,19 +121,19 @@ def _print_summary(m: dict) -> None:
         row("Duration", f"{run['duration_seconds']}s  |  {vol['total']} leads processed"),
         thin,
         "  EXTRACTION QUALITY",
-        stat("Success rate",     vol["success"],     vol["total"], vol["success_rate_pct"]),
-        stat("Email fill rate",  vol["email_count"], vol["total"], vol["email_fill_rate_pct"]),
-        stat("Owner name rate",  vol["name_count"],  vol["total"], vol["owner_name_fill_rate_pct"]),
+        stat("Success rate",     vol["success"],     vol["total"], vol["success_rate_pct"],       _GREEN),
+        stat("Email fill rate",  vol["email_count"], vol["total"], vol["email_fill_rate_pct"],    _CYAN),
+        stat("Owner name rate",  vol["name_count"],  vol["total"], vol["owner_name_fill_rate_pct"], _CYAN),
         thin,
         f"  CONFIDENCE  (successful leads: {vol['success']})",
-        count_row("High",   conf["high"],   conf["high_pct"]),
-        count_row("Medium", conf["medium"], conf["medium_pct"]),
-        count_row("Low",    conf["low"],    conf["low_pct"]),
+        count_row("High",   conf["high"],   conf["high_pct"],   _GREEN),
+        count_row("Medium", conf["medium"], conf["medium_pct"], _YELLOW),
+        count_row("Low",    conf["low"],    conf["low_pct"],    _RED),
         thin,
         "  PIPELINE STATUS",
-        count_row("No website",   ps["no_website"],   ps["no_website_pct"]),
-        count_row("Crawl failed", ps["crawl_failed"], ps["crawl_failed_pct"]),
-        count_row("LLM failed",   ps["llm_failed"],   ps["llm_failed_pct"]),
+        count_row("No website",   ps["no_website"],   ps["no_website_pct"],   _YELLOW),
+        count_row("Crawl failed", ps["crawl_failed"], ps["crawl_failed_pct"], _RED),
+        count_row("LLM failed",   ps["llm_failed"],   ps["llm_failed_pct"],   _RED),
         sep,
         "",
     ]

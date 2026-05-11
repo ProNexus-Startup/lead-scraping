@@ -238,6 +238,12 @@ def _rebuild_seen_from_csv(csv_path: str) -> Set[str]:
     return seen
 
 
+_G = "\033[32m"   # green  — success
+_Y = "\033[33m"   # yellow — soft failures / warnings
+_R = "\033[31m"   # red    — hard failures
+_X = "\033[0m"    # reset
+
+
 def _print_zip_summary(
     query: str,
     label: str,
@@ -254,25 +260,28 @@ def _print_zip_summary(
     def pct(n: int) -> str:
         return f"{n / total * 100:.1f}%" if total else "0.0%"
 
+    def row(label: str, value: str, color: str = _X) -> str:
+        return f"  {label:<20}{color}{value}{_X}"
+
     lines = [
         "",
         sep,
         "  ZIP SCRAPE SUMMARY",
         thin,
-        f"  {'Query':<20}{query}",
-        f"  {'Label':<20}{label}",
-        f"  {'Duration':<20}{round(duration, 1)}s",
+        row("Query",          query),
+        row("Label",          label),
+        row("Duration",       f"{round(duration, 1)}s"),
         thin,
         "  COVERAGE",
-        f"  {'ZIPs completed':<20}{zstats['done']} / {zstats['total']}",
-        f"  {'ZIPs failed':<20}{zstats['failed']}",
-        f"  {'Total leads':<20}{total}",
+        row("ZIPs completed", f"{zstats['done']} / {zstats['total']}", _G),
+        row("ZIPs failed",    str(zstats["failed"]),                   _R if zstats["failed"] else _X),
+        row("Total leads",    str(total)),
         thin,
         "  EXTRACTION",
-        f"  {'Success':<20}{totals.get('success', 0):>4}   {pct(totals.get('success', 0))}",
-        f"  {'No website':<20}{totals.get('no_website', 0):>4}   {pct(totals.get('no_website', 0))}",
-        f"  {'Crawl failed':<20}{totals.get('crawl_failed', 0):>4}   {pct(totals.get('crawl_failed', 0))}",
-        f"  {'LLM failed':<20}{totals.get('llm_failed', 0):>4}   {pct(totals.get('llm_failed', 0))}",
+        row("Success",        f"{totals.get('success', 0):>4}   {pct(totals.get('success', 0))}",       _G),
+        row("No website",     f"{totals.get('no_website', 0):>4}   {pct(totals.get('no_website', 0))}", _Y),
+        row("Crawl failed",   f"{totals.get('crawl_failed', 0):>4}   {pct(totals.get('crawl_failed', 0))}", _R),
+        row("LLM failed",     f"{totals.get('llm_failed', 0):>4}   {pct(totals.get('llm_failed', 0))}", _R),
         thin,
         f"  Output: {csv_path}",
         sep,

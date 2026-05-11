@@ -1,0 +1,90 @@
+2026-04-26 20:08:14,221 [INFO] src.pipeline.lead_pipeline: === Pipeline start: query='plumbers in Austin TX' limit=1 ===
+2026-04-26 20:08:14,221 [INFO] src.scrapers.maps_scraper: Maps API request: query='plumbers in Austin TX' offset=0 batch=1
+2026-04-26 20:08:15,655 [INFO] src.scrapers.maps_scraper: Maps scraper returned 1 businesses for query='plumbers in Austin TX'
+2026-04-26 20:08:15,656 [INFO] src.pipeline.lead_pipeline: [1/1] Processing: Plumb Masters, Inc.
+2026-04-26 20:08:15,656 [INFO] src.pipeline.lead_pipeline:   Crawling https://m.facebook.com/plumb.masters/
+2026-04-26 20:08:15,656 [DEBUG] src.scrapers.web_crawler: Crawling [0] https://m.facebook.com/plumb.masters
+2026-04-26 20:08:16,276 [DEBUG] src.scrapers.web_crawler: Skipped https://m.facebook.com/plumb.masters (status=400)
+2026-04-26 20:08:16,276 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://m.facebook.com/who-we-are
+2026-04-26 20:08:16,876 [DEBUG] src.scrapers.web_crawler: Skipped https://m.facebook.com/who-we-are (status=400)
+2026-04-26 20:08:16,877 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://m.facebook.com/about
+2026-04-26 20:08:17,348 [DEBUG] src.scrapers.web_crawler: Skipped https://m.facebook.com/about (status=400)
+2026-04-26 20:08:17,348 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://m.facebook.com/team
+2026-04-26 20:08:17,753 [DEBUG] src.scrapers.web_crawler: Skipped https://m.facebook.com/team (status=400)
+2026-04-26 20:08:17,753 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://m.facebook.com/about-us
+2026-04-26 20:08:18,284 [DEBUG] src.scrapers.web_crawler: Skipped https://m.facebook.com/about-us (status=400)
+2026-04-26 20:08:18,285 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://m.facebook.com/contact-us
+2026-04-26 20:08:18,792 [DEBUG] src.scrapers.web_crawler: Skipped https://m.facebook.com/contact-us (status=400)
+2026-04-26 20:08:18,793 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://m.facebook.com/our-team
+2026-04-26 20:08:19,253 [DEBUG] src.scrapers.web_crawler: Skipped https://m.facebook.com/our-team (status=400)
+2026-04-26 20:08:19,254 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://m.facebook.com/contact
+2026-04-26 20:08:20,096 [DEBUG] src.scrapers.web_crawler: Skipped https://m.facebook.com/contact (status=400)
+2026-04-26 20:08:20,096 [INFO] src.scrapers.web_crawler: Crawled 0 pages from m.facebook.com (0 chars)
+2026-04-26 20:08:20,097 [WARNING] src.pipeline.lead_pipeline:   No text extracted from https://m.facebook.com/plumb.masters/
+2026-04-26 20:08:20,098 [INFO] src.utils.csv_writer: Wrote 1 leads to C:\Users\dpfec\Desktop\Pronexus\lead-scraping\output\leads_20260427_000820_plumbers_in_Austin_TX.csv
+2026-04-26 20:08:20,098 [INFO] src.pipeline.lead_pipeline: === Pipeline done: 1 total, 0 with owner extracted ===
+2026-04-26 20:13:16,386 [INFO] src.pipeline.lead_pipeline: === Pipeline start: query='plumbers in Austin TX' limit=3 ===
+2026-04-26 20:13:16,387 [INFO] src.scrapers.maps_scraper: Maps API request: query='plumbers in Austin TX' offset=0 batch=3
+2026-04-26 20:13:17,840 [INFO] src.scrapers.maps_scraper: Maps scraper returned 3 businesses for query='plumbers in Austin TX'
+2026-04-26 20:13:17,840 [INFO] src.pipeline.lead_pipeline: [1/3] Processing: Daniel's Plumbing and Air Conditioning
+2026-04-26 20:13:17,841 [INFO] src.pipeline.lead_pipeline:   Crawling https://www.danielsaustin.com/?utm_source=GMB&utm_medium=organic&utm_campaign=austin
+2026-04-26 20:13:17,841 [DEBUG] src.scrapers.web_crawler: Crawling [0] https://www.danielsaustin.com/?utm_source=GMB&utm_medium=organic&utm_campaign=austin
+2026-04-26 20:13:19,619 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.danielsaustin.com/contact
+2026-04-26 20:13:21,348 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.danielsaustin.com/who-we-are
+2026-04-26 20:13:22,065 [DEBUG] src.scrapers.web_crawler: Skipped https://www.danielsaustin.com/who-we-are (status=404)
+2026-04-26 20:13:22,066 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.danielsaustin.com/our-team
+2026-04-26 20:13:22,815 [DEBUG] src.scrapers.web_crawler: Skipped https://www.danielsaustin.com/our-team (status=404)
+2026-04-26 20:13:22,815 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.danielsaustin.com/about
+2026-04-26 20:13:24,539 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.danielsaustin.com/team
+2026-04-26 20:13:25,269 [DEBUG] src.scrapers.web_crawler: Skipped https://www.danielsaustin.com/team (status=404)
+2026-04-26 20:13:25,270 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.danielsaustin.com/about-us
+2026-04-26 20:13:26,952 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.danielsaustin.com/contact-us
+2026-04-26 20:13:28,775 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.danielsaustin.com/one-tree-planted
+2026-04-26 20:13:30,690 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.danielsaustin.com/about/financing
+2026-04-26 20:13:32,978 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.danielsaustin.com/careers
+2026-04-26 20:13:34,736 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.danielsaustin.com/expert-tips
+2026-04-26 20:13:36,477 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.danielsaustin.com/specials
+2026-04-26 20:13:38,245 [INFO] src.scrapers.web_crawler: Crawled 10 pages from www.danielsaustin.com (26959 chars)
+2026-04-26 20:13:38,246 [INFO] src.pipeline.lead_pipeline:   Running LLM extraction for https://www.danielsaustin.com/?utm_source=GMB&utm_medium=organic&utm_campaign=austin
+2026-04-26 20:13:39,365 [DEBUG] src.extractors.llm_extractor: LLM raw response for https://www.danielsaustin.com/?utm_source=GMB&utm_medium=organic&utm_campaign=austin: {"owner_name":"Daniel (likely Daniel Austin)","email":null,"confidence":"medium","reasoning":"The business name and domain suggest the owner is Daniel, possibly Daniel Austin, but no personal email is listed on the site."}
+2026-04-26 20:13:39,366 [INFO] src.pipeline.lead_pipeline:   Found: Daniel (likely Daniel Austin) <None> (confidence=medium)
+2026-04-26 20:13:39,366 [INFO] src.pipeline.lead_pipeline: [2/3] Processing: Reliant Plumbing
+2026-04-26 20:13:39,367 [INFO] src.pipeline.lead_pipeline:   Crawling https://reliantplumbing.com/?utm_source=google&utm_medium=website&utm_campaign=hqgbp&utm_id=beecave-GBP
+2026-04-26 20:13:39,367 [DEBUG] src.scrapers.web_crawler: Crawling [0] https://reliantplumbing.com/?utm_source=google&utm_medium=website&utm_campaign=hqgbp&utm_id=beecave-GBP
+2026-04-26 20:13:41,664 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://reliantplumbing.com/contact
+2026-04-26 20:13:43,927 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://reliantplumbing.com/who-we-are
+2026-04-26 20:13:44,817 [DEBUG] src.scrapers.web_crawler: Skipped https://reliantplumbing.com/who-we-are (status=404)
+2026-04-26 20:13:44,818 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://reliantplumbing.com/our-team
+2026-04-26 20:13:45,586 [DEBUG] src.scrapers.web_crawler: Skipped https://reliantplumbing.com/our-team (status=404)
+2026-04-26 20:13:45,587 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://reliantplumbing.com/about
+2026-04-26 20:13:47,966 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://reliantplumbing.com/team
+2026-04-26 20:13:48,679 [DEBUG] src.scrapers.web_crawler: Skipped https://reliantplumbing.com/team (status=404)
+2026-04-26 20:13:48,680 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://reliantplumbing.com/about-us
+2026-04-26 20:13:50,921 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://reliantplumbing.com/contact-us
+2026-04-26 20:13:53,165 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://reliantplumbing.com/?spdirect=d5hsynkr1v
+2026-04-26 20:13:55,233 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://reliantplumbing.com/
+2026-04-26 20:13:57,329 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://reliantplumbing.com/our-services
+2026-04-26 20:13:59,510 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://reliantplumbing.com/recent-plumbing-projects
+2026-04-26 20:14:01,751 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://reliantplumbing.com/plumbing-projects-austin
+2026-04-26 20:14:04,106 [INFO] src.scrapers.web_crawler: Crawled 10 pages from reliantplumbing.com (64746 chars)
+2026-04-26 20:14:04,108 [INFO] src.pipeline.lead_pipeline:   Running LLM extraction for https://reliantplumbing.com/?utm_source=google&utm_medium=website&utm_campaign=hqgbp&utm_id=beecave-GBP
+2026-04-26 20:14:04,354 [ERROR] src.extractors.llm_extractor: LLM extraction failed for https://reliantplumbing.com/?utm_source=google&utm_medium=website&utm_campaign=hqgbp&utm_id=beecave-GBP: Error code: 413 - {'error': {'message': 'Request too large for model `openai/gpt-oss-120b` in organization `org_01kpzxjkbmfg6s2jrbknzpf91e` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Requested 8167, please reduce your message size and try again. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}
+2026-04-26 20:14:04,355 [INFO] src.pipeline.lead_pipeline:   LLM could not identify owner. Reason: Error code: 413 - {'error': {'message': 'Request too large for model `openai/gpt-oss-120b` in organization `org_01kpzxjkbmfg6s2jrbknzpf91e` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Requested 8167, please reduce your message size and try again. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}
+2026-04-26 20:14:04,355 [INFO] src.pipeline.lead_pipeline: [3/3] Processing: Austin's Greatest Plumbing
+2026-04-26 20:14:04,356 [INFO] src.pipeline.lead_pipeline:   Crawling https://austinsgreatestplumbing.com/
+2026-04-26 20:14:04,357 [DEBUG] src.scrapers.web_crawler: Crawling [0] https://austinsgreatestplumbing.com/
+2026-04-26 20:14:06,114 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://austinsgreatestplumbing.com/contact
+2026-04-26 20:14:07,669 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://austinsgreatestplumbing.com/who-we-are
+2026-04-26 20:14:11,153 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://austinsgreatestplumbing.com/our-team
+2026-04-26 20:14:14,433 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://austinsgreatestplumbing.com/about
+2026-04-26 20:14:15,899 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://austinsgreatestplumbing.com/team
+2026-04-26 20:14:19,107 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://austinsgreatestplumbing.com/about-us
+2026-04-26 20:14:21,463 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://austinsgreatestplumbing.com/contact-us
+2026-04-26 20:14:23,186 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://austinsgreatestplumbing.com/terms-and-conditions
+2026-04-26 20:14:27,876 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://austinsgreatestplumbing.com/privacy-policy
+2026-04-26 20:14:31,431 [INFO] src.scrapers.web_crawler: Crawled 10 pages from austinsgreatestplumbing.com (100749 chars)
+2026-04-26 20:14:31,431 [INFO] src.pipeline.lead_pipeline:   Running LLM extraction for https://austinsgreatestplumbing.com/
+2026-04-26 20:14:31,651 [ERROR] src.extractors.llm_extractor: LLM extraction failed for https://austinsgreatestplumbing.com/: Error code: 413 - {'error': {'message': 'Request too large for model `openai/gpt-oss-120b` in organization `org_01kpzxjkbmfg6s2jrbknzpf91e` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Requested 8733, please reduce your message size and try again. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}
+2026-04-26 20:14:31,651 [INFO] src.pipeline.lead_pipeline:   LLM could not identify owner. Reason: Error code: 413 - {'error': {'message': 'Request too large for model `openai/gpt-oss-120b` in organization `org_01kpzxjkbmfg6s2jrbknzpf91e` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Requested 8733, please reduce your message size and try again. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}
+2026-04-26 20:14:31,653 [INFO] src.utils.csv_writer: Wrote 3 leads to C:\Users\dpfec\Desktop\Pronexus\lead-scraping\output\leads_20260427_001431_plumbers_in_Austin_TX.csv
+2026-04-26 20:14:31,654 [INFO] src.pipeline.lead_pipeline: === Pipeline done: 3 total, 1 with owner extracted ===
