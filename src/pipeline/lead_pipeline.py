@@ -1,5 +1,8 @@
 import asyncio
+import csv
+import os
 import time
+from datetime import datetime, timezone
 from typing import List, Set
 
 import config.settings as settings
@@ -7,8 +10,9 @@ from src.extractors.llm_extractor import extract_owner
 from src.models.lead import Lead
 from src.scrapers.maps_scraper import search_businesses
 from src.scrapers.web_crawler import crawl_domain
-from src.utils.csv_writer import write_leads_csv
+from src.utils.csv_writer import append_leads_csv, init_csv, write_leads_csv
 from src.utils.logger import get_logger
+from src.utils.progress_tracker import ProgressTracker
 from src.utils.run_summary import write_run_summary
 
 logger = get_logger(__name__)
@@ -107,60 +111,171 @@ async def run_zips(
     zip_codes: List[str],
     limit_per_zip: int = 5,
     output_label: str = "",
+    resume: bool = False,
 ) -> str:
     """
-    ZIP-based pipeline: search each ZIP → deduplicate → Crawl → LLM → single CSV.
+    ZIP-based pipeline with stop/resume support.
+    Processes one ZIP at a time: Maps → deduplicate → Crawl → LLM → append CSV → save progress.
     Returns the path to the written CSV file.
     """
+    from tqdm import tqdm
+
+    os.makedirs(settings.PROGRESS_DIR, exist_ok=True)
+    label = output_label or query.replace(" ", "_")
+    progress_path = os.path.join(settings.PROGRESS_DIR, f"{label}.json")
+    tracker = ProgressTracker(progress_path)
+    seen: Set[str] = set()
+
+    if resume and os.path.exists(progress_path):
+        tracker.load_existing()
+        csv_path = tracker.csv_path
+        seen = _rebuild_seen_from_csv(csv_path)
+        pending = tracker.pending_zips()
+        zstats = tracker.zip_stats()
+        print(f"Resuming: {zstats['done']} ZIPs done, {len(pending)} pending, {zstats['failed']} failed")
+    else:
+        slug = label.replace(" ", "_")
+        filename = f"leads_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}_{slug}.csv"
+        csv_path = os.path.join(settings.OUTPUT_DIR, filename)
+        os.makedirs(settings.OUTPUT_DIR, exist_ok=True)
+        tracker.init_fresh(query=query, label=label, csv_path=csv_path, zip_codes=zip_codes)
+        init_csv(csv_path)
+        pending = zip_codes
+
+    if not pending:
+        print("All ZIPs already completed. Nothing to do.")
+        return tracker.csv_path
+
     logger.info(
-        f"=== ZIP pipeline start: query='{query}' zips={len(zip_codes)} "
+        f"=== ZIP pipeline start: query='{query}' pending={len(pending)} "
         f"limit_per_zip={limit_per_zip} provider={settings.LLM_PROVIDER} ==="
     )
 
-    # Phase 1: collect leads from all ZIPs, deduplicate by website (or name+address)
-    all_leads: List[Lead] = []
-    seen: Set[str] = set()
-
-    for zip_code in zip_codes:
-        zip_query = f"{query} in {zip_code}"
-        leads = search_businesses(zip_query, limit=limit_per_zip)
-        for lead in leads:
-            key = (
-                lead.website.lower()
-                if lead.website
-                else f"{lead.business_name}|{lead.address}".lower()
-            )
-            if key not in seen:
-                seen.add(key)
-                all_leads.append(lead)
-
-    if not all_leads:
-        logger.warning("No businesses returned from any ZIP. Check your API key and query.")
-        return ""
-
-    logger.info(f"Collected {len(all_leads)} unique leads across {len(zip_codes)} ZIPs")
-
-    # Phase 2: crawl + LLM
-    model = settings.CEREBRAS_MODEL if settings.LLM_PROVIDER == "cerebras" else settings.GROQ_MODEL
     start = time.perf_counter()
+    zstats = tracker.zip_stats()
 
-    semaphore = asyncio.Semaphore(settings.MAX_CONCURRENT_LEADS)
-    await asyncio.gather(*[_process_lead(lead, semaphore) for lead in all_leads])
+    try:
+        with tqdm(
+            total=zstats["total"],
+            initial=zstats["done"] + zstats["failed"],
+            desc=f"{query[:25]}",
+            unit="ZIP",
+            dynamic_ncols=True,
+            colour="green",
+        ) as pbar:
+            totals = tracker.totals()
+            pbar.set_postfix(leads=totals["leads"], failed=zstats["failed"])
+
+            for zip_code in pending:
+                zip_query = f"{query} in {zip_code}"
+
+                try:
+                    raw_leads = search_businesses(zip_query, limit=limit_per_zip)
+                except Exception as exc:
+                    logger.error(f"Maps API error for ZIP {zip_code}: {exc}")
+                    tracker.mark_failed(zip_code)
+                    pbar.update(1)
+                    pbar.set_postfix(leads=tracker.totals()["leads"], failed=tracker.zip_stats()["failed"])
+                    continue
+
+                # Deduplicate against everything already seen
+                new_leads = []
+                for lead in raw_leads:
+                    key = (
+                        lead.website.lower()
+                        if lead.website
+                        else f"{lead.business_name}|{lead.address}".lower()
+                    )
+                    if key not in seen:
+                        seen.add(key)
+                        new_leads.append(lead)
+
+                # Crawl + LLM for this ZIP's unique leads
+                if new_leads:
+                    semaphore = asyncio.Semaphore(settings.MAX_CONCURRENT_LEADS)
+                    await asyncio.gather(*[_process_lead(lead, semaphore) for lead in new_leads])
+                    append_leads_csv(new_leads, csv_path)
+
+                tracker.mark_done(zip_code, new_leads)
+                pbar.update(1)
+                pbar.set_postfix(leads=tracker.totals()["leads"], failed=tracker.zip_stats()["failed"])
+
+    except KeyboardInterrupt:
+        zstats = tracker.zip_stats()
+        print(
+            f"\n\nStopped after {zstats['done']}/{zstats['total']} ZIPs. "
+            f"Progress saved.\n"
+            f"Resume with: python main.py --query \"{query}\" "
+            f"{'--state ' + label.upper() if len(label) == 2 else '--zips ...'} --resume"
+        )
+        return csv_path
 
     duration = time.perf_counter() - start
-    label = output_label or query
-    csv_path = write_leads_csv(all_leads, settings.OUTPUT_DIR, label=label)
-    write_run_summary(
-        leads=all_leads,
-        csv_path=csv_path,
-        query=query,
-        provider=settings.LLM_PROVIDER,
-        model=model,
-        duration_seconds=duration,
-    )
+    totals = tracker.totals()
+    zstats = tracker.zip_stats()
 
-    success_count = sum(1 for l in all_leads if l.status == "success")
+    _print_zip_summary(query, label, totals, zstats, duration, csv_path)
     logger.info(
-        f"=== ZIP pipeline done: {len(all_leads)} total, {success_count} with owner extracted ==="
+        f"=== ZIP pipeline done: {totals['leads']} leads, "
+        f"{zstats['done']} ZIPs done, {zstats['failed']} failed ==="
     )
     return csv_path
+
+
+def _rebuild_seen_from_csv(csv_path: str) -> Set[str]:
+    """Rebuild the deduplication set from an existing CSV so resumes don't add duplicates."""
+    seen: Set[str] = set()
+    if not os.path.exists(csv_path):
+        return seen
+    with open(csv_path, newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            key = (
+                row.get("website", "").lower()
+                or f"{row.get('business_name', '')}|{row.get('address', '')}".lower()
+            )
+            if key:
+                seen.add(key)
+    return seen
+
+
+def _print_zip_summary(
+    query: str,
+    label: str,
+    totals: dict,
+    zstats: dict,
+    duration: float,
+    csv_path: str,
+) -> None:
+    width = 54
+    sep = "=" * width
+    thin = "-" * width
+    total = totals["leads"]
+
+    def pct(n: int) -> str:
+        return f"{n / total * 100:.1f}%" if total else "0.0%"
+
+    lines = [
+        "",
+        sep,
+        "  ZIP SCRAPE SUMMARY",
+        thin,
+        f"  {'Query':<20}{query}",
+        f"  {'Label':<20}{label}",
+        f"  {'Duration':<20}{round(duration, 1)}s",
+        thin,
+        "  COVERAGE",
+        f"  {'ZIPs completed':<20}{zstats['done']} / {zstats['total']}",
+        f"  {'ZIPs failed':<20}{zstats['failed']}",
+        f"  {'Total leads':<20}{total}",
+        thin,
+        "  EXTRACTION",
+        f"  {'Success':<20}{totals.get('success', 0):>4}   {pct(totals.get('success', 0))}",
+        f"  {'No website':<20}{totals.get('no_website', 0):>4}   {pct(totals.get('no_website', 0))}",
+        f"  {'Crawl failed':<20}{totals.get('crawl_failed', 0):>4}   {pct(totals.get('crawl_failed', 0))}",
+        f"  {'LLM failed':<20}{totals.get('llm_failed', 0):>4}   {pct(totals.get('llm_failed', 0))}",
+        thin,
+        f"  Output: {csv_path}",
+        sep,
+        "",
+    ]
+    print("\n".join(lines))

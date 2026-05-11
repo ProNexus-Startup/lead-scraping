@@ -35,6 +35,10 @@ def parse_args() -> argparse.Namespace:
         "--min-pop", type=int, default=1000,
         help="Minimum ZIP population filter (use with --state). Default: 1000",
     )
+    parser.add_argument(
+        "--resume", action="store_true",
+        help="Resume a previous ZIP run from where it left off.",
+    )
     return parser.parse_args()
 
 
@@ -82,7 +86,13 @@ def main() -> None:
 
         label = args.label or (args.state.lower() if args.state else "zips")
         csv_path = asyncio.run(
-            run_zips(query=args.query, zip_codes=zip_codes, limit_per_zip=args.limit, output_label=label)
+            run_zips(
+                query=args.query,
+                zip_codes=zip_codes,
+                limit_per_zip=args.limit,
+                output_label=label,
+                resume=args.resume,
+            )
         )
 
         if csv_path:

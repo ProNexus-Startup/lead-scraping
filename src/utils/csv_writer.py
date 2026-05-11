@@ -23,3 +23,19 @@ def write_leads_csv(leads: List[Lead], output_dir: str, label: str = "") -> str:
 
     logger.info(f"Wrote {len(leads)} leads to {filepath}")
     return filepath
+
+
+def init_csv(csv_path: str) -> None:
+    """Create a CSV file with headers only. Used at the start of a ZIP run."""
+    os.makedirs(os.path.dirname(csv_path), exist_ok=True)
+    with open(csv_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=Lead.csv_fieldnames())
+        writer.writeheader()
+
+
+def append_leads_csv(leads: List[Lead], csv_path: str) -> None:
+    """Append leads to an existing CSV. Call after each ZIP is processed."""
+    with open(csv_path, "a", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=Lead.csv_fieldnames())
+        for lead in leads:
+            writer.writerow(lead.to_csv_row())

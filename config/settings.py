@@ -24,5 +24,6 @@ ZIP_MIN_POPULATION: int = int(os.getenv("ZIP_MIN_POPULATION", "1000"))
 MAPS_API_HOST = "maps-data.p.rapidapi.com"
 MAPS_API_BASE_URL = f"https://{MAPS_API_HOST}"
 
-OUTPUT_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "output")
-LOGS_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "logs")
+OUTPUT_DIR   = os.path.join(os.path.dirname(os.path.dirname(__file__)), "output")
+LOGS_DIR     = os.path.join(os.path.dirname(os.path.dirname(__file__)), "logs")
+PROGRESS_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "progress")
