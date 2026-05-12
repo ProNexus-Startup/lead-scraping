@@ -1,0 +1,159 @@
+2026-05-08 13:14:09,130 [INFO] src.pipeline.lead_pipeline: === Pipeline start: query='HVAC companies in Chicago IL' limit=3 concurrency=1 provider=cerebras ===
+2026-05-08 13:14:09,131 [INFO] src.scrapers.maps_scraper: Maps API request: query='HVAC companies in Chicago IL' offset=0 batch=3
+2026-05-08 13:14:11,907 [INFO] src.scrapers.maps_scraper: Maps scraper returned 3 businesses for query='HVAC companies in Chicago IL'
+2026-05-08 13:14:11,909 [INFO] src.pipeline.lead_pipeline:   Crawling https://www.fourseasonsheatingcooling.com/?utm_source=gbp&utm_medium=organic&utm_campaign=gbp-chicago
+2026-05-08 13:14:11,926 [DEBUG] src.scrapers.web_crawler: Crawling [0] https://www.fourseasonsheatingcooling.com/?utm_source=gbp&utm_medium=organic&utm_campaign=gbp-chicago
+2026-05-08 13:14:14,383 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/who-we-are
+2026-05-08 13:14:15,175 [DEBUG] src.scrapers.web_crawler: Skipped https://www.fourseasonsheatingcooling.com/who-we-are (status=404)
+2026-05-08 13:14:15,176 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/about
+2026-05-08 13:14:16,228 [DEBUG] src.scrapers.web_crawler: Skipped https://www.fourseasonsheatingcooling.com/about (status=404)
+2026-05-08 13:14:16,228 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/our-team
+2026-05-08 13:14:17,245 [DEBUG] src.scrapers.web_crawler: Skipped https://www.fourseasonsheatingcooling.com/our-team (status=404)
+2026-05-08 13:14:17,245 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/contact-us
+2026-05-08 13:14:18,460 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/contact
+2026-05-08 13:14:19,837 [DEBUG] src.scrapers.web_crawler: Skipped https://www.fourseasonsheatingcooling.com/contact (status=404)
+2026-05-08 13:14:19,837 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/team
+2026-05-08 13:14:20,734 [DEBUG] src.scrapers.web_crawler: Skipped https://www.fourseasonsheatingcooling.com/team (status=404)
+2026-05-08 13:14:20,734 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/about-us
+2026-05-08 13:14:21,925 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/
+2026-05-08 13:14:23,157 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/heating
+2026-05-08 13:14:24,346 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/furnaces
+2026-05-08 13:14:26,008 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/furnaces/furnace-installation
+2026-05-08 13:14:27,576 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/offers/furnace-clean-check
+2026-05-08 13:14:29,124 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/chicago-furnace-repair-near-you
+2026-05-08 13:14:30,714 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/furnace-free-estimate
+2026-05-08 13:14:32,398 [INFO] src.scrapers.web_crawler: Crawled 10 pages from www.fourseasonsheatingcooling.com (108189 chars)
+2026-05-08 13:14:32,399 [INFO] src.pipeline.lead_pipeline:   Running LLM extraction for https://www.fourseasonsheatingcooling.com/?utm_source=gbp&utm_medium=organic&utm_campaign=gbp-chicago
+2026-05-08 13:14:33,539 [DEBUG] src.extractors.llm_extractor: LLM raw response for https://www.fourseasonsheatingcooling.com/?utm_source=gbp&utm_medium=organic&utm_campaign=gbp-chicago: {"owner_first_name": "", "owner_last_name": "", "owner_name": "", "owner_source_url": "", "email_primary": "", "email_primary_source_url": "", "email_secondary": "", "email_secondary_source_url": "", "email_other": [], "business_name_normalized": "Four Seasons Heating Cooling", "owner_candidates": [], "confidence": "low", "reasoning": "No individual owner, founder, or principal is mentioned anywhere on the website; only the company and its awards are highlighted."}
+2026-05-08 13:14:33,539 [INFO] src.pipeline.lead_pipeline:   LLM could not identify owner for https://www.fourseasonsheatingcooling.com/?utm_source=gbp&utm_medium=organic&utm_campaign=gbp-chicago. Reason: No individual owner, founder, or principal is mentioned anywhere on the website; only the company and its awards are highlighted.
+2026-05-08 13:14:33,540 [INFO] src.pipeline.lead_pipeline:   Crawling https://www.chicagohvacrepairdr.com/service-area/chicago-il/?utm_source=google&utm_medium=organic&utm_campaign=gbp&utm_content=chicago
+2026-05-08 13:14:33,547 [DEBUG] src.scrapers.web_crawler: Crawling [0] https://www.chicagohvacrepairdr.com/service-area/chicago-il?utm_source=google&utm_medium=organic&utm_campaign=gbp&utm_content=chicago
+2026-05-08 13:14:35,211 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/who-we-are
+2026-05-08 13:14:35,564 [DEBUG] src.scrapers.web_crawler: Skipped https://www.chicagohvacrepairdr.com/who-we-are (status=404)
+2026-05-08 13:14:35,564 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/about
+2026-05-08 13:14:35,926 [DEBUG] src.scrapers.web_crawler: Skipped https://www.chicagohvacrepairdr.com/about (status=404)
+2026-05-08 13:14:35,926 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/our-team
+2026-05-08 13:14:36,292 [DEBUG] src.scrapers.web_crawler: Skipped https://www.chicagohvacrepairdr.com/our-team (status=404)
+2026-05-08 13:14:36,293 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/contact-us
+2026-05-08 13:14:37,957 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/contact
+2026-05-08 13:14:38,326 [DEBUG] src.scrapers.web_crawler: Skipped https://www.chicagohvacrepairdr.com/contact (status=404)
+2026-05-08 13:14:38,326 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/team
+2026-05-08 13:14:38,838 [DEBUG] src.scrapers.web_crawler: Skipped https://www.chicagohvacrepairdr.com/team (status=404)
+2026-05-08 13:14:38,839 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/about-us
+2026-05-08 13:14:40,476 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/
+2026-05-08 13:14:42,001 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/heating
+2026-05-08 13:14:43,642 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/heating-repair
+2026-05-08 13:14:45,151 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/heating-service
+2026-05-08 13:14:46,690 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/heating-installation
+2026-05-08 13:14:48,297 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/boilers
+2026-05-08 13:14:49,906 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/ductless-hvac
+2026-05-08 13:14:51,459 [INFO] src.scrapers.web_crawler: Crawled 10 pages from www.chicagohvacrepairdr.com (48380 chars)
+2026-05-08 13:14:51,461 [INFO] src.pipeline.lead_pipeline:   Running LLM extraction for https://www.chicagohvacrepairdr.com/service-area/chicago-il/?utm_source=google&utm_medium=organic&utm_campaign=gbp&utm_content=chicago
+2026-05-08 13:15:32,703 [WARNING] src.extractors.llm_extractor: Rate limit hit for https://www.chicagohvacrepairdr.com/service-area/chicago-il/?utm_source=google&utm_medium=organic&utm_campaign=gbp&utm_content=chicago. Retrying in 10.0s.
+2026-05-08 13:16:32,941 [ERROR] src.extractors.llm_extractor: LLM extraction failed for https://www.chicagohvacrepairdr.com/service-area/chicago-il/?utm_source=google&utm_medium=organic&utm_campaign=gbp&utm_content=chicago: Error code: 429 - {'message': "We're experiencing high traffic right now! Please try again soon.", 'type': 'too_many_requests_error', 'param': 'queue', 'code': 'queue_exceeded'}
+2026-05-08 13:16:32,942 [INFO] src.pipeline.lead_pipeline:   LLM could not identify owner for https://www.chicagohvacrepairdr.com/service-area/chicago-il/?utm_source=google&utm_medium=organic&utm_campaign=gbp&utm_content=chicago. Reason: Error code: 429 - {'message': "We're experiencing high traffic right now! Please try again soon.", 'type': 'too_many_requests_error', 'param': 'queue', 'code': 'queue_exceeded'}
+2026-05-08 13:16:32,942 [INFO] src.pipeline.lead_pipeline:   Crawling https://alltemp.com/?utm_campaign=gmb
+2026-05-08 13:16:32,955 [DEBUG] src.scrapers.web_crawler: Crawling [0] https://alltemp.com/?utm_campaign=gmb
+2026-05-08 13:16:35,011 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/who-we-are
+2026-05-08 13:16:35,696 [DEBUG] src.scrapers.web_crawler: Skipped https://alltemp.com/who-we-are (status=404)
+2026-05-08 13:16:35,696 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/about
+2026-05-08 13:16:36,344 [DEBUG] src.scrapers.web_crawler: Skipped https://alltemp.com/about (status=404)
+2026-05-08 13:16:36,344 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/our-team
+2026-05-08 13:16:36,962 [DEBUG] src.scrapers.web_crawler: Skipped https://alltemp.com/our-team (status=404)
+2026-05-08 13:16:36,963 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/contact-us
+2026-05-08 13:16:39,411 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/contact
+2026-05-08 13:16:41,606 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/team
+2026-05-08 13:16:42,233 [DEBUG] src.scrapers.web_crawler: Skipped https://alltemp.com/team (status=404)
+2026-05-08 13:16:42,234 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/about-us
+2026-05-08 13:16:42,862 [DEBUG] src.scrapers.web_crawler: Skipped https://alltemp.com/about-us (status=404)
+2026-05-08 13:16:42,863 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/
+2026-05-08 13:16:44,615 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/cooling-services/air-conditioning-repair
+2026-05-08 13:16:46,829 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/cooling-services/air-conditioning-service
+2026-05-08 13:16:49,053 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/cooling-services/air-conditioning-installation
+2026-05-08 13:16:51,365 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/cooling-services/spacepak-ac-systems
+2026-05-08 13:16:53,613 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/cooling-services/unico-ac-systems
+2026-05-08 13:16:55,806 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/cooling-services/ductless-air-conditioners
+2026-05-08 13:16:58,127 [INFO] src.scrapers.web_crawler: Crawled 10 pages from alltemp.com (59320 chars)
+2026-05-08 13:16:58,129 [INFO] src.pipeline.lead_pipeline:   Running LLM extraction for https://alltemp.com/?utm_campaign=gmb
+2026-05-08 13:17:33,914 [DEBUG] src.extractors.llm_extractor: LLM raw response for https://alltemp.com/?utm_campaign=gmb: {"owner_first_name": "", "owner_last_name": "", "owner_name": "", "owner_source_url": "", "email_primary": "", "email_primary_source_url": "", "email_secondary": "", "email_secondary_source_url": "", "email_other": [], "business_name_normalized": "All Temp", "owner_candidates": [{"name": "Mike Clark", "role_hint": "Provided proposal and options to meet customer needs, likely in a leadership or ownership role"}, {"name": "Edwin", "role_hint": "Frequently mentioned technician with high customer praise, possibly long-standing or senior staff"}, {"name": "Randy", "role_hint": "Service technician mentioned in review"}, {"name": "John", "role_hint": "Mentioned in review as being from sales"}, {"name": "Marlon", "role_hint": "Installer mentioned in review"}, {"name": "Luis", "role_hint": "Installer mentioned in review"}, {"name": "Raul", "role_hint": "Service technician mentioned in review"}, {"name": "Nancy G.", "role_hint": "Customer reviewer"}, {"name": "Edgard T.", "role_hint": "Customer reviewer"}, {"name": "Marcin Z.", "role_hint": "Customer reviewer"}, {"name": "Anita S.", "role_hint": "Customer reviewer"}, {"name": "Jaclyn J.", "role_hint": "Customer reviewer"}, {"name": "Ray O.", "role_hint": "Customer reviewer"}], "confidence": "low", "reasoning": "No owner, founder, or principal is explicitly named on the site; ownership is only referenced generically as '4th generation of ownership' without naming individuals."}
+2026-05-08 13:17:33,915 [INFO] src.pipeline.lead_pipeline:   LLM could not identify owner for https://alltemp.com/?utm_campaign=gmb. Reason: No owner, founder, or principal is explicitly named on the site; ownership is only referenced generically as '4th generation of ownership' without naming individuals.
+2026-05-08 13:17:33,919 [INFO] src.utils.csv_writer: Wrote 3 leads to C:\Users\dpfec\Desktop\Pronexus\lead-scraping\output\leads_20260508_171733_cerebras_enriched.csv
+2026-05-08 13:21:20,458 [INFO] src.pipeline.lead_pipeline: === Pipeline start: query='HVAC companies in Chicago IL' limit=3 concurrency=1 provider=groq ===
+2026-05-08 13:21:20,458 [INFO] src.scrapers.maps_scraper: Maps API request: query='HVAC companies in Chicago IL' offset=0 batch=3
+2026-05-08 13:21:22,148 [INFO] src.scrapers.maps_scraper: Maps scraper returned 3 businesses for query='HVAC companies in Chicago IL'
+2026-05-08 13:21:22,150 [INFO] src.pipeline.lead_pipeline:   Crawling https://www.fourseasonsheatingcooling.com/?utm_source=gbp&utm_medium=organic&utm_campaign=gbp-chicago
+2026-05-08 13:21:22,157 [DEBUG] src.scrapers.web_crawler: Crawling [0] https://www.fourseasonsheatingcooling.com/?utm_source=gbp&utm_medium=organic&utm_campaign=gbp-chicago
+2026-05-08 13:21:24,956 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/contact-us
+2026-05-08 13:21:26,151 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/about-us
+2026-05-08 13:21:27,330 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/contact
+2026-05-08 13:21:27,402 [DEBUG] src.scrapers.web_crawler: Skipped https://www.fourseasonsheatingcooling.com/contact (status=404)
+2026-05-08 13:21:27,402 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/team
+2026-05-08 13:21:27,473 [DEBUG] src.scrapers.web_crawler: Skipped https://www.fourseasonsheatingcooling.com/team (status=404)
+2026-05-08 13:21:27,474 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/our-team
+2026-05-08 13:21:28,191 [DEBUG] src.scrapers.web_crawler: Skipped https://www.fourseasonsheatingcooling.com/our-team (status=404)
+2026-05-08 13:21:28,191 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/who-we-are
+2026-05-08 13:21:28,986 [DEBUG] src.scrapers.web_crawler: Skipped https://www.fourseasonsheatingcooling.com/who-we-are (status=404)
+2026-05-08 13:21:28,986 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/about
+2026-05-08 13:21:29,058 [DEBUG] src.scrapers.web_crawler: Skipped https://www.fourseasonsheatingcooling.com/about (status=404)
+2026-05-08 13:21:29,058 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/
+2026-05-08 13:21:30,238 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/heating
+2026-05-08 13:21:31,416 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/furnaces
+2026-05-08 13:21:32,639 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/furnaces/furnace-installation
+2026-05-08 13:21:33,822 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/offers/furnace-clean-check
+2026-05-08 13:21:35,007 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/chicago-furnace-repair-near-you
+2026-05-08 13:21:36,191 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.fourseasonsheatingcooling.com/furnace-free-estimate
+2026-05-08 13:21:37,441 [INFO] src.scrapers.web_crawler: Crawled 10 pages from www.fourseasonsheatingcooling.com (108189 chars)
+2026-05-08 13:21:37,442 [INFO] src.pipeline.lead_pipeline:   Running LLM extraction for https://www.fourseasonsheatingcooling.com/?utm_source=gbp&utm_medium=organic&utm_campaign=gbp-chicago
+2026-05-08 13:21:39,099 [DEBUG] src.extractors.llm_extractor: LLM raw response for https://www.fourseasonsheatingcooling.com/?utm_source=gbp&utm_medium=organic&utm_campaign=gbp-chicago: {"business_name_normalized":"Four Seasons Heating and Air Conditioning","confidence":"low","email_other":[],"email_primary":"","email_primary_source_url":"","email_secondary":"","email_secondary_source_url":"","owner_candidates":[],"owner_first_name":"","owner_last_name":"","owner_name":"","owner_source_url":"","reasoning":"The provided site content contains no personal names or email addresses that identify an owner, founder, or principal; therefore ownership cannot be determined with confidence."}
+2026-05-08 13:21:39,099 [INFO] src.pipeline.lead_pipeline:   LLM could not identify owner for https://www.fourseasonsheatingcooling.com/?utm_source=gbp&utm_medium=organic&utm_campaign=gbp-chicago. Reason: The provided site content contains no personal names or email addresses that identify an owner, founder, or principal; therefore ownership cannot be determined with confidence.
+2026-05-08 13:21:39,100 [INFO] src.pipeline.lead_pipeline:   Crawling https://www.chicagohvacrepairdr.com/service-area/chicago-il/?utm_source=google&utm_medium=organic&utm_campaign=gbp&utm_content=chicago
+2026-05-08 13:21:39,106 [DEBUG] src.scrapers.web_crawler: Crawling [0] https://www.chicagohvacrepairdr.com/service-area/chicago-il?utm_source=google&utm_medium=organic&utm_campaign=gbp&utm_content=chicago
+2026-05-08 13:21:40,853 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/contact-us
+2026-05-08 13:21:42,566 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/about-us
+2026-05-08 13:21:44,225 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/contact
+2026-05-08 13:21:44,576 [DEBUG] src.scrapers.web_crawler: Skipped https://www.chicagohvacrepairdr.com/contact (status=404)
+2026-05-08 13:21:44,577 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/team
+2026-05-08 13:21:44,902 [DEBUG] src.scrapers.web_crawler: Skipped https://www.chicagohvacrepairdr.com/team (status=404)
+2026-05-08 13:21:44,902 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/our-team
+2026-05-08 13:21:45,268 [DEBUG] src.scrapers.web_crawler: Skipped https://www.chicagohvacrepairdr.com/our-team (status=404)
+2026-05-08 13:21:45,268 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/who-we-are
+2026-05-08 13:21:45,630 [DEBUG] src.scrapers.web_crawler: Skipped https://www.chicagohvacrepairdr.com/who-we-are (status=404)
+2026-05-08 13:21:45,630 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/about
+2026-05-08 13:21:45,941 [DEBUG] src.scrapers.web_crawler: Skipped https://www.chicagohvacrepairdr.com/about (status=404)
+2026-05-08 13:21:45,941 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/
+2026-05-08 13:21:47,474 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/heating
+2026-05-08 13:21:49,038 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/heating-repair
+2026-05-08 13:21:50,591 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/heating-service
+2026-05-08 13:21:52,251 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/heating-installation
+2026-05-08 13:21:53,999 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/boilers
+2026-05-08 13:21:55,694 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://www.chicagohvacrepairdr.com/ductless-hvac
+2026-05-08 13:21:57,335 [INFO] src.scrapers.web_crawler: Crawled 10 pages from www.chicagohvacrepairdr.com (48378 chars)
+2026-05-08 13:21:57,336 [INFO] src.pipeline.lead_pipeline:   Running LLM extraction for https://www.chicagohvacrepairdr.com/service-area/chicago-il/?utm_source=google&utm_medium=organic&utm_campaign=gbp&utm_content=chicago
+2026-05-08 13:22:09,939 [DEBUG] src.extractors.llm_extractor: LLM raw response for https://www.chicagohvacrepairdr.com/service-area/chicago-il/?utm_source=google&utm_medium=organic&utm_campaign=gbp&utm_content=chicago: {"business_name_normalized":"Chicago HVAC Repair Doctor","confidence":"low","email_other":[],"email_primary":"","email_primary_source_url":"","email_secondary":"","email_secondary_source_url":"","owner_candidates":[],"owner_first_name":"","owner_last_name":"","owner_name":"","owner_source_url":"","reasoning":"The site only states the company is family‑owned and operated but does not name any individual owner or provide personal email addresses; no owner‑specific or generic email addresses were found, so ownership cannot be identified with confidence."}
+2026-05-08 13:22:09,939 [INFO] src.pipeline.lead_pipeline:   LLM could not identify owner for https://www.chicagohvacrepairdr.com/service-area/chicago-il/?utm_source=google&utm_medium=organic&utm_campaign=gbp&utm_content=chicago. Reason: The site only states the company is family‑owned and operated but does not name any individual owner or provide personal email addresses; no owner‑specific or generic email addresses were found, so ownership cannot be identified with confidence.
+2026-05-08 13:22:09,939 [INFO] src.pipeline.lead_pipeline:   Crawling https://alltemp.com/?utm_campaign=gmb
+2026-05-08 13:22:09,945 [DEBUG] src.scrapers.web_crawler: Crawling [0] https://alltemp.com/?utm_campaign=gmb
+2026-05-08 13:22:11,865 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/contact-us
+2026-05-08 13:22:14,139 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/about-us
+2026-05-08 13:22:14,781 [DEBUG] src.scrapers.web_crawler: Skipped https://alltemp.com/about-us (status=404)
+2026-05-08 13:22:14,781 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/contact
+2026-05-08 13:22:16,974 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/team
+2026-05-08 13:22:17,602 [DEBUG] src.scrapers.web_crawler: Skipped https://alltemp.com/team (status=404)
+2026-05-08 13:22:17,602 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/our-team
+2026-05-08 13:22:18,255 [DEBUG] src.scrapers.web_crawler: Skipped https://alltemp.com/our-team (status=404)
+2026-05-08 13:22:18,256 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/who-we-are
+2026-05-08 13:22:18,878 [DEBUG] src.scrapers.web_crawler: Skipped https://alltemp.com/who-we-are (status=404)
+2026-05-08 13:22:18,880 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/about
+2026-05-08 13:22:19,506 [DEBUG] src.scrapers.web_crawler: Skipped https://alltemp.com/about (status=404)
+2026-05-08 13:22:19,506 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/
+2026-05-08 13:22:21,283 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/cooling-services/air-conditioning-repair
+2026-05-08 13:22:23,519 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/cooling-services/air-conditioning-service
+2026-05-08 13:22:25,756 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/cooling-services/air-conditioning-installation
+2026-05-08 13:22:27,992 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/cooling-services/spacepak-ac-systems
+2026-05-08 13:22:30,232 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/cooling-services/unico-ac-systems
+2026-05-08 13:22:32,441 [DEBUG] src.scrapers.web_crawler: Crawling [1] https://alltemp.com/cooling-services/ductless-air-conditioners
+2026-05-08 13:22:34,727 [INFO] src.scrapers.web_crawler: Crawled 10 pages from alltemp.com (59328 chars)
+2026-05-08 13:22:34,731 [INFO] src.pipeline.lead_pipeline:   Running LLM extraction for https://alltemp.com/?utm_campaign=gmb
+2026-05-08 13:22:55,502 [DEBUG] src.extractors.llm_extractor: LLM raw response for https://alltemp.com/?utm_campaign=gmb: {"owner_first_name":"","owner_last_name":"","owner_name":"","owner_source_url":"","email_primary":"","email_primary_source_url":"","email_secondary":"","email_secondary_source_url":"","email_other":[],"business_name_normalized":"All Temp","owner_candidates":[],"confidence":"low","reasoning":"The site states the company is family‑owned and in its 4th generation but does not name any individual owner or provide a personal email; only employee names appear in reviews, which are excluded."}
+2026-05-08 13:22:55,502 [INFO] src.pipeline.lead_pipeline:   LLM could not identify owner for https://alltemp.com/?utm_campaign=gmb. Reason: The site states the company is family‑owned and in its 4th generation but does not name any individual owner or provide a personal email; only employee names appear in reviews, which are excluded.
+2026-05-08 13:22:55,506 [INFO] src.utils.csv_writer: Wrote 3 leads to C:\Users\dpfec\Desktop\Pronexus\lead-scraping\output\leads_20260508_172255_groq_enriched.csv

@@ -1,15 +1,8 @@
 # Pronexus Lead Scraping Pipeline
 
-An automated pipeline that collects business leads from Google Maps, crawls their websites, and uses an LLM to extract the most likely owner name and contact email — all exported to a clean CSV file.
+An automated pipeline that collects business leads from Google Maps, crawls their websites, and uses an LLM to extract owner name and contact emails — exported to a clean CSV.
 
----
-
-## What It Does
-
-1. **Maps Collection** — Queries Google Maps via RapidAPI for businesses by category and location (plumbers, HVAC, dentists, etc.) and captures name, phone, address, website, rating, and review count.
-2. **Website Crawling** — For each business that has a website, crawls the homepage and up to depth 2 of same-domain internal links, prioritising `/about`, `/team`, and `/contact` pages.
-3. **Owner Extraction** — Sends the collected page text to a Groq-hosted LLM, which identifies the most likely owner or founder and their best contact email.
-4. **CSV Export** — Writes all results to a timestamped CSV file in the `output/` directory.
+**Flow:** Google Maps (RapidAPI) → Website Crawl → LLM Extraction → CSV
 
 ---
 
@@ -18,39 +11,47 @@ An automated pipeline that collects business leads from Google Maps, crawls thei
 ```
 lead-scraping/
 ├── config/
-│   └── settings.py           # All configuration loaded from .env
+│   └── settings.py              # All configuration loaded from .env
+├── data/
+│   └── us-zip-codes.csv         # 40k+ US ZIP codes with population data
 ├── src/
-│   ├── models/lead.py        # Lead data model and CSV serialisation
+│   ├── models/lead.py           # Lead dataclass — contract between all pipeline stages
 │   ├── scrapers/
-│   │   ├── maps_scraper.py   # RapidAPI Google Maps integration
-│   │   └── web_crawler.py    # Same-domain website crawler
+│   │   ├── maps_scraper.py      # RapidAPI Google Maps integration
+│   │   ├── web_crawler.py       # Same-domain BFS website crawler
+│   │   └── zip_loader.py        # Loads and filters ZIP codes by state / population
 │   ├── extractors/
-│   │   └── llm_extractor.py  # Groq LLM prompt and response parsing
+│   │   └── llm_extractor.py     # LLM prompt, JSON schema enforcement, response parsing
 │   ├── pipeline/
-│   │   └── lead_pipeline.py  # Orchestrates the full scrape → crawl → extract flow
+│   │   └── lead_pipeline.py     # Orchestrates scrape → crawl → extract → CSV
 │   └── utils/
-│       ├── logger.py         # Console + daily log file output
-│       └── csv_writer.py     # Timestamped CSV writer
-├── tests/                    # Unit tests (no network calls required)
-├── output/                   # Generated CSV files (git-ignored)
-├── logs/                     # Daily run logs (git-ignored)
-├── .env.example              # Environment variable template
+│       ├── logger.py            # ISO 8601 UTC logger (console + daily file)
+│       ├── csv_writer.py        # CSV write, append, and init helpers
+│       ├── progress_tracker.py  # Stop/resume state saved to progress/*.json
+│       └── run_summary.py       # Quality metrics printed after each run
+├── tests/                       # Unit tests (no network or API keys required)
+├── output/                      # Generated CSV files
+├── logs/                        # Daily log files (run_YYYYMMDD.log)
+├── progress/                    # ZIP run progress files (for --resume)
+├── .env.example                 # Environment variable template
 ├── requirements.txt
-└── main.py                   # CLI entry point
+└── main.py                      # CLI entry point
 ```
 
 ---
 
 ## Setup
 
-**Prerequisites:** Python 3.11+, a RapidAPI account with the [Maps Data by Alexandar Vikhorev](https://rapidapi.com/alexanderxbx/api/maps-data) subscription, and a Groq API key.
+**Prerequisites:** Python 3.11+, a RapidAPI account with the [Maps Data API](https://rapidapi.com/alexanderxbx/api/maps-data) subscription, and at least one LLM API key (Groq or Cerebras).
 
 **1. Create and activate a virtual environment**
 
 ```bash
 python -m venv venv
+
 # Windows
 venv\Scripts\activate
+
 # macOS / Linux
 source venv/bin/activate
 ```
@@ -69,51 +70,149 @@ cp .env.example .env
 
 Open `.env` and fill in your keys:
 
-```
-RAPIDAPI_KEY=your_rapidapi_key_here
-GROQ_API_KEY=your_groq_api_key_here
+```env
+RAPIDAPI_KEY=your_rapidapi_key
+GROQ_API_KEY=your_groq_api_key
+
+# Optional — only needed if using Cerebras
+CEREBRAS_API_KEY=your_cerebras_api_key
+LLM_PROVIDER=cerebras
 ```
 
 ---
 
 ## Usage
 
-**Test with a single lead (recommended first run)**
+### Quick test (single lead)
 
 ```bash
 python main.py --query "plumbers in Austin TX" --limit 1
 ```
 
-**Scrape a full batch**
+### Direct query — specific city or area
 
 ```bash
-python main.py --query "dentists in Chicago IL" --limit 50 --label dentists_chicago
+python main.py --query "dentists in Chicago IL" --limit 20 --label dentists_chicago
 ```
 
-**Available options**
+### ZIP code mode — full state coverage
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| `--query` | *(required)* | Search query passed to Google Maps |
-| `--limit` | `1` | Maximum number of businesses to process |
-| `--label` | *(empty)* | Optional suffix added to the output CSV filename |
+Searches every ZIP code in a state individually for complete geographic coverage.
 
-**Output CSV columns**
+```bash
+# All ZIPs in Texas with population >= 1,000 (default)
+python main.py --query "dentists" --state TX --limit 5
+
+# Only high-population ZIPs in California
+python main.py --query "pizza restaurant" --state CA --min-pop 5000 --limit 3
+
+# Specific ZIP codes only
+python main.py --query "gym" --zips 90210,90401,91101 --limit 5
+```
+
+### Stop and resume a long run
+
+Hit `Ctrl+C` at any time — progress is saved after every ZIP. Resume with:
+
+```bash
+python main.py --query "dentists" --state TX --limit 5 --resume
+```
+
+The pipeline picks up exactly where it left off. No ZIPs are re-scraped, no API calls are wasted.
+
+### All CLI flags
+
+| Flag | Shorthand | Default | Description |
+|------|-----------|---------|-------------|
+| `--query` | `-q` | *(required)* | Business type to search, e.g. `"plumbers"` |
+| `--limit` | | `1` | Leads per ZIP (ZIP mode) or total leads (direct mode) |
+| `--label` | | *(empty)* | Optional suffix added to the output CSV filename |
+| `--state` | `-s` | | 2-letter US state code — searches all ZIPs in that state |
+| `--zips` | `-z` | | Comma-separated ZIP codes to search |
+| `--min-pop` | | `1000` | Minimum ZIP population filter (use with `--state`) |
+| `--resume` | | `false` | Resume a previous ZIP run from where it stopped |
+
+---
+
+## Output
+
+### CSV columns
 
 | Column | Description |
 |--------|-------------|
 | `business_name` | Business name from Google Maps |
+| `business_name_normalized` | Name with legal suffixes removed (for outreach) |
 | `category` | Business category (e.g. Plumber, Dentist) |
 | `phone` | Phone number |
 | `address` | Full address |
 | `website` | Business website URL |
 | `rating` | Google Maps star rating |
-| `reviews_count` | Number of reviews |
-| `owner_name` | LLM-identified owner or founder name |
-| `owner_email` | Best contact email found on the website |
+| `reviews_count` | Number of Google reviews |
+| `owner_first_name` | First name only — for personalised outreach ("Hi John,") |
+| `owner_last_name` | Last name |
+| `owner_name` | Full name as seen on the website |
+| `owner_source_page` | URL of the page where the owner name was found |
+| `owner_email_primary` | Owner's personal email (john@company.com) |
+| `owner_email_primary_source` | URL where the primary email was found |
+| `owner_email_secondary` | Best generic contact email (info@, contact@, etc.) |
+| `owner_email_secondary_source` | URL where the secondary email was found |
+| `owner_email_other` | Any remaining emails found, comma-separated |
+| `owner_candidates` | JSON array of all named candidates when ownership is ambiguous |
 | `llm_confidence` | `high`, `medium`, or `low` |
-| `scraped_at` | UTC timestamp of the run |
+| `llm_reasoning` | One-sentence explanation of the LLM's decision |
+| `scraped_at` | UTC timestamp of when the lead was scraped |
 | `status` | `success`, `no_website`, `crawl_failed`, or `llm_failed` |
+
+### Progress and summary
+
+After each run, two files are written alongside the CSV:
+- `output/*_summary.json` — quality metrics (success rate, email fill rate, confidence breakdown)
+- `progress/{label}.json` — ZIP-level progress used for stop/resume
+
+---
+
+## LLM Providers
+
+The pipeline supports two providers. Set `LLM_PROVIDER` in `.env` to switch.
+
+| Provider | Env var | Default model | JSON schema support |
+|----------|---------|---------------|---------------------|
+| Groq | `GROQ_API_KEY` | `openai/gpt-oss-120b` | Yes (OSS models only) |
+| Cerebras | `CEREBRAS_API_KEY` | `llama-3.3-70b` | Yes |
+
+**Switching providers:**
+
+```env
+# Use Groq (default)
+LLM_PROVIDER=groq
+GROQ_MODEL=openai/gpt-oss-120b
+
+# Use Cerebras
+LLM_PROVIDER=cerebras
+CEREBRAS_MODEL=llama-3.3-70b
+```
+
+---
+
+## GPU Testing (Local Inference)
+
+For high-throughput state-wide runs, the pipeline can be used with a locally-hosted model on a rented GPU. This eliminates all rate limits and allows much higher concurrency.
+
+**Recommended setup:**
+1. Rent a GPU instance (e.g. RunPod, Lambda Labs, Vast.ai)
+2. Load the model using [vLLM](https://github.com/vllm-project/vllm) — it exposes an OpenAI-compatible API
+3. Point the pipeline at your local server by setting a custom base URL in `llm_extractor.py`
+4. Increase `MAX_CONCURRENT_LEADS` to `20`–`30` in `.env`
+
+**Recommended `.env` for GPU runs:**
+
+```env
+MAX_CONCURRENT_LEADS=20
+CRAWL_MAX_PAGES=10
+CRAWL_DELAY_SECONDS=0.5
+```
+
+With a local model, the LLM is no longer the bottleneck — throughput is limited by the web crawler and the Maps API instead.
 
 ---
 
@@ -123,30 +222,36 @@ python main.py --query "dentists in Chicago IL" --limit 50 --label dentists_chic
 python -m pytest tests/ -v
 ```
 
-Tests are fully isolated — no API keys or network access required.
-
----
-
-## Rate Limits and Scaling
-
-| Service | Free Tier Limit | Notes |
-|---------|----------------|-------|
-| RapidAPI Maps | ~1,000 requests / month | Each `--limit N` run uses N requests |
-| Groq API | Generous free tier | One LLM call per business with a website |
-| Web crawling | No limit | 1-second delay between page fetches by default |
-
-Start with `--limit 1` to verify your setup, then gradually increase. Logs in `logs/` provide a full record of every run.
+All tests are fully isolated — no API keys or network access required.
 
 ---
 
 ## Configuration Reference
 
-All settings can be overridden in `.env`:
-
 | Variable | Default | Description |
 |----------|---------|-------------|
+| `RAPIDAPI_KEY` | *(required)* | RapidAPI key for Maps Data API |
+| `GROQ_API_KEY` | *(required)* | Groq API key |
+| `LLM_PROVIDER` | `groq` | LLM backend: `groq` or `cerebras` |
 | `GROQ_MODEL` | `openai/gpt-oss-120b` | Groq model ID |
+| `CEREBRAS_API_KEY` | | Cerebras API key (if using Cerebras) |
+| `CEREBRAS_MODEL` | `llama-3.3-70b` | Cerebras model ID |
+| `MAX_CONCURRENT_LEADS` | `10` | Leads processed in parallel |
 | `CRAWL_MAX_DEPTH` | `2` | How deep to follow internal links |
 | `CRAWL_MAX_PAGES` | `10` | Max pages crawled per domain |
-| `CRAWL_DELAY_SECONDS` | `1.0` | Polite delay between page requests |
+| `CRAWL_DELAY_SECONDS` | `1.0` | Polite delay between page fetches |
 | `REQUEST_TIMEOUT_SECONDS` | `15` | HTTP timeout for all requests |
+| `ZIP_MIN_POPULATION` | `1000` | Default min population filter for `--state` |
+
+---
+
+## Logs
+
+Logs are written to `logs/run_YYYYMMDD.log` and also printed to the terminal. Each line follows ISO 8601 UTC format:
+
+```
+2026-05-11T12:52:14.638Z [INFO ] src.pipeline.lead_pipeline — Crawling https://example.com
+2026-05-11T12:52:15.201Z [ERROR] src.scrapers.web_crawler — Timeout fetching https://example.com
+```
+
+Log levels: `DEBUG` (file only), `INFO`, `WARNING`, `ERROR`.
