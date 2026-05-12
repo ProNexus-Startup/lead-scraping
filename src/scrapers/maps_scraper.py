@@ -25,7 +25,7 @@ def search_businesses(query: str, limit: int = 20, country: str = "us", lang: st
     fetched = 0
 
     while fetched < limit:
-        batch = min(20, limit - fetched)
+        batch = min(500, limit - fetched)
         params = {
             "query": query,
             "limit": batch,

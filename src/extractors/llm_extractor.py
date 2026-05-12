@@ -17,6 +17,11 @@ def _build_client() -> AsyncOpenAI:
             api_key=settings.CEREBRAS_API_KEY,
             base_url="https://api.cerebras.ai/v1",
         )
+    if settings.LLM_PROVIDER == "local":
+        return AsyncOpenAI(
+            api_key="local",
+            base_url=settings.LOCAL_LLM_BASE_URL,
+        )
     return AsyncOpenAI(
         api_key=settings.GROQ_API_KEY,
         base_url="https://api.groq.com/openai/v1",
@@ -84,7 +89,7 @@ _GROQ_JSON_SCHEMA_MODELS = frozenset({
 
 def _get_response_format(model: str) -> dict:
     """Return json_schema when the provider/model supports it, json_object otherwise."""
-    if settings.LLM_PROVIDER == "cerebras":
+    if settings.LLM_PROVIDER in ("cerebras", "local"):
         return _RESPONSE_SCHEMA
     if model in _GROQ_JSON_SCHEMA_MODELS:
         return _RESPONSE_SCHEMA
@@ -182,7 +187,12 @@ async def extract_owner(website_url: str, page_text: str) -> dict:
     if not page_text.strip():
         return _empty_result("no page text")
 
-    model = settings.CEREBRAS_MODEL if settings.LLM_PROVIDER == "cerebras" else settings.GROQ_MODEL
+    if settings.LLM_PROVIDER == "cerebras":
+        model = settings.CEREBRAS_MODEL
+    elif settings.LLM_PROVIDER == "local":
+        model = settings.LOCAL_LLM_MODEL
+    else:
+        model = settings.GROQ_MODEL
     messages = [
         {"role": "system", "content": _SYSTEM_PROMPT},
         {"role": "user", "content": _USER_TEMPLATE.format(url=website_url, text=page_text[:40_000])},

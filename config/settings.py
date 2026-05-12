@@ -8,9 +8,11 @@ GROQ_API_KEY: str = os.environ["GROQ_API_KEY"]
 
 GROQ_MODEL: str = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
 
-LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "groq")  # groq | cerebras
+LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "groq")  # groq | cerebras | local
 CEREBRAS_API_KEY: str = os.getenv("CEREBRAS_API_KEY", "")
 CEREBRAS_MODEL: str = os.getenv("CEREBRAS_MODEL", "llama-3.3-70b")
+LOCAL_LLM_BASE_URL: str = os.getenv("LOCAL_LLM_BASE_URL", "http://localhost:8000/v1")
+LOCAL_LLM_MODEL: str = os.getenv("LOCAL_LLM_MODEL", "openai/gpt-oss-120b")
 
 MAX_CONCURRENT_LEADS: int = int(os.getenv("MAX_CONCURRENT_LEADS", "10"))
 
