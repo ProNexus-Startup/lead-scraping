@@ -89,7 +89,9 @@ _GROQ_JSON_SCHEMA_MODELS = frozenset({
 
 def _get_response_format(model: str) -> dict:
     """Return json_schema when the provider/model supports it, json_object otherwise."""
-    if settings.LLM_PROVIDER in ("cerebras", "local"):
+    if settings.LLM_PROVIDER == "local":
+        return {"type": "json_object"}
+    if settings.LLM_PROVIDER == "cerebras":
         return _RESPONSE_SCHEMA
     if model in _GROQ_JSON_SCHEMA_MODELS:
         return _RESPONSE_SCHEMA
@@ -180,6 +182,13 @@ owner-specific email as primary, best generic email as secondary, remaining emai
 6. If multiple people are mentioned but ownership is unclear, list ALL of them in \
 owner_candidates ranked from most to least likely to be the owner.
 7. Your confidence level (high / medium / low) and one sentence of reasoning.
+
+Respond with a JSON object using EXACTLY these field names:
+owner_first_name, owner_last_name, owner_name, owner_source_url,
+email_primary, email_primary_source_url, email_secondary, email_secondary_source_url,
+email_other (array of strings), business_name_normalized,
+owner_candidates (array of objects with "name" and "role_hint" keys),
+confidence, reasoning
 """
 
 
@@ -195,7 +204,7 @@ async def extract_owner(website_url: str, page_text: str) -> dict:
         model = settings.GROQ_MODEL
     messages = [
         {"role": "system", "content": _SYSTEM_PROMPT},
-        {"role": "user", "content": _USER_TEMPLATE.format(url=website_url, text=page_text[:40_000])},
+        {"role": "user", "content": _USER_TEMPLATE.format(url=website_url, text=page_text[:15_000])},
     ]
 
     try:
@@ -210,14 +219,19 @@ async def extract_owner(website_url: str, page_text: str) -> dict:
 async def _call_with_retry(messages: list, model: str, website_url: str) -> str:
     for attempt in range(2):
         try:
+            extra = {"chat_template_kwargs": {"enable_thinking": False}} if settings.LLM_PROVIDER == "local" else {}
             response = await _client.chat.completions.create(
                 model=model,
                 messages=messages,
                 temperature=0.1,
-                max_tokens=600,
+                max_tokens=3000,
                 response_format=_get_response_format(model),
+                extra_body=extra,
             )
-            return response.choices[0].message.content.strip()
+            content = response.choices[0].message.content
+            if content is None:
+                raise RuntimeError("Empty response from model")
+            return content.strip()
         except RateLimitError as exc:
             if attempt == 1:
                 raise
