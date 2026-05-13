@@ -36,18 +36,19 @@ plt.rcParams.update({
 })
 
 _PALETTE = {
-    "success":      "#2ecc71",
-    "llm_failed":   "#e74c3c",
-    "no_website":   "#f39c12",
-    "crawl_failed": "#e67e22",
-    "high":         "#2ecc71",
-    "medium":       "#f39c12",
-    "low":          "#e74c3c",
-    "primary":      "#3498db",
-    "secondary":    "#9b59b6",
-    "no_email":     "#bdc3c7",
-    "found":        "#2ecc71",
-    "not_found":    "#e74c3c",
+    "success":        "#2ecc71",
+    "llm_failed":     "#e74c3c",
+    "no_website":     "#f39c12",
+    "crawl_failed":   "#e67e22",
+    "high":           "#2ecc71",
+    "medium":         "#f39c12",
+    "low":            "#e74c3c",
+    "owner_personal": "#2ecc71",
+    "owner_likely":   "#3498db",
+    "generic":        "#9b59b6",
+    "no_email":       "#bdc3c7",
+    "found":          "#2ecc71",
+    "not_found":      "#e74c3c",
 }
 
 
@@ -127,14 +128,20 @@ def _draw_confidence(df: pd.DataFrame, ax) -> None:
 
 # ── Chart 4: Email Coverage ───────────────────────────────────────────────────
 def _draw_email_coverage(df: pd.DataFrame, ax) -> None:
-    total       = len(df)
-    n_primary   = df["owner_email_primary"].notna().sum()
-    n_secondary = df["owner_email_secondary"].notna().sum()
-    n_no_email  = (~df["owner_email_primary"].notna() & ~df["owner_email_secondary"].notna()).sum()
+    total    = len(df)
+    n_personal = df["email_owner_personal"].notna().sum() if "email_owner_personal" in df.columns else 0
+    n_likely   = df["email_owner_likely"].notna().sum()   if "email_owner_likely"   in df.columns else 0
+    n_generic  = df["email_generic"].notna().sum()        if "email_generic"        in df.columns else 0
+    has_any = (
+        df.get("email_owner_personal", pd.Series(dtype=object)).notna() |
+        df.get("email_owner_likely",   pd.Series(dtype=object)).notna() |
+        df.get("email_generic",        pd.Series(dtype=object)).notna()
+    )
+    n_no_email = (~has_any).sum()
 
-    labels = ["Primary Email", "Secondary Email", "No Email"]
-    counts = [n_primary, n_secondary, n_no_email]
-    colors = [_PALETTE["primary"], _PALETTE["secondary"], _PALETTE["no_email"]]
+    labels = ["Owner Personal", "Owner Likely", "Generic Contact", "No Email"]
+    counts = [n_personal, n_likely, n_generic, n_no_email]
+    colors = [_PALETTE["owner_personal"], _PALETTE["owner_likely"], _PALETTE["generic"], _PALETTE["no_email"]]
 
     bars = ax.barh(labels, counts, color=colors, height=0.5, edgecolor="none")
     _bar_label(ax, bars, total)
