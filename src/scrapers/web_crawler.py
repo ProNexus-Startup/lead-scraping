@@ -32,6 +32,15 @@ _BLOCKED_DOMAINS = {
 }
 
 
+def is_social_or_directory_url(url: str) -> bool:
+    """Return True if the URL points to a social media or directory site, not a real business website."""
+    try:
+        domain = urlparse(url).netloc.lower().lstrip("www.")
+        return any(domain == blocked or domain.endswith("." + blocked) for blocked in _BLOCKED_DOMAINS)
+    except Exception:
+        return False
+
+
 async def crawl_domain(start_url: str) -> str:
     """
     Crawls start_url and same-domain links up to CRAWL_MAX_DEPTH.
@@ -57,7 +66,7 @@ async def crawl_domain(start_url: str) -> str:
 
     async with httpx.AsyncClient(
         headers=_HEADERS,
-        timeout=settings.REQUEST_TIMEOUT_SECONDS,
+        timeout=httpx.Timeout(connect=8.0, read=settings.REQUEST_TIMEOUT_SECONDS),
         follow_redirects=True,
     ) as client:
         while queue and len(page_texts) < settings.CRAWL_MAX_PAGES:
