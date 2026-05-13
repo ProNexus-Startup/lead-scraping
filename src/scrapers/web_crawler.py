@@ -66,7 +66,7 @@ async def crawl_domain(start_url: str) -> str:
 
     async with httpx.AsyncClient(
         headers=_HEADERS,
-        timeout=httpx.Timeout(connect=8.0, read=settings.REQUEST_TIMEOUT_SECONDS),
+        timeout=httpx.Timeout(settings.REQUEST_TIMEOUT_SECONDS, connect=8.0),
         follow_redirects=True,
     ) as client:
         while queue and len(page_texts) < settings.CRAWL_MAX_PAGES:
