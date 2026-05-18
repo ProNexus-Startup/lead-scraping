@@ -117,7 +117,7 @@ def _draw_confidence(df: pd.DataFrame, ax) -> None:
     n_success  = len(success_df)
     order      = ["high", "medium", "low"]
     labels     = ["High", "Medium", "Low"]
-    counts     = [success_df["llm_confidence"].value_counts().get(c, 0) for c in order]
+    counts     = [success_df["llm_confidence"].str.lower().value_counts().get(c, 0) for c in order]
     colors     = [_PALETTE[c] for c in order]
 
     bars = ax.barh(labels, counts, color=colors, height=0.5, edgecolor="none")
@@ -179,7 +179,7 @@ def main() -> None:
     out_path = csv_path.replace(".csv", "_charts.png")
     fig.savefig(out_path, dpi=150, bbox_inches="tight", facecolor="white")
     plt.close(fig)
-    print(f"Saved → {out_path}")
+    print(f"Saved -> {out_path}")
 
 
 if __name__ == "__main__":
