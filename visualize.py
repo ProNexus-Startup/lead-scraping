@@ -46,6 +46,7 @@ _PALETTE = {
     "owner_personal": "#2ecc71",
     "owner_likely":   "#3498db",
     "generic":        "#9b59b6",
+    "other":          "#1abc9c",
     "no_email":       "#bdc3c7",
     "found":          "#2ecc71",
     "not_found":      "#e74c3c",
@@ -128,25 +129,37 @@ def _draw_confidence(df: pd.DataFrame, ax) -> None:
 
 # ── Chart 4: Email Coverage ───────────────────────────────────────────────────
 def _draw_email_coverage(df: pd.DataFrame, ax) -> None:
-    total    = len(df)
-    n_personal = df["email_owner_personal"].notna().sum() if "email_owner_personal" in df.columns else 0
-    n_likely   = df["email_owner_likely"].notna().sum()   if "email_owner_likely"   in df.columns else 0
-    n_generic  = df["email_generic"].notna().sum()        if "email_generic"        in df.columns else 0
-    has_any = (
-        df.get("email_owner_personal", pd.Series(dtype=object)).notna() |
-        df.get("email_owner_likely",   pd.Series(dtype=object)).notna() |
-        df.get("email_generic",        pd.Series(dtype=object)).notna()
-    )
-    n_no_email = (~has_any).sum()
+    total   = len(df)
+    vc      = df["recommended_email_type"].value_counts(dropna=False)
+    n_personal = vc.get("owner_personal", 0)
+    n_likely   = vc.get("owner_likely",   0)
+    n_generic  = vc.get("generic",        0)
+    n_other    = vc.get("other",          0)
+    n_no_email = int(df["recommended_email_type"].isna().sum())
 
-    labels = ["Owner Personal", "Owner Likely", "Generic Contact", "No Email"]
-    counts = [n_personal, n_likely, n_generic, n_no_email]
-    colors = [_PALETTE["owner_personal"], _PALETTE["owner_likely"], _PALETTE["generic"], _PALETTE["no_email"]]
+    labels = ["Owner Personal", "Owner Likely", "Generic Contact", "Other", "No Email"]
+    counts = [n_personal, n_likely, n_generic, n_other, n_no_email]
+    colors = [_PALETTE["owner_personal"], _PALETTE["owner_likely"], _PALETTE["generic"], _PALETTE["other"], _PALETTE["no_email"]]
 
     bars = ax.barh(labels, counts, color=colors, height=0.5, edgecolor="none")
     _bar_label(ax, bars, total)
     ax.set_xlim(0, max(counts) * 1.38)
     _style_ax(ax, f"4 — Email Coverage  ({total:,} total leads)")
+
+
+# ── Chart 5: Pipeline Effectiveness (excl. no_website) ───────────────────────
+def _draw_pipeline_effectiveness(df: pd.DataFrame, ax) -> None:
+    actionable = df[df["status"] != "no_website"]
+    total      = len(actionable)
+    order      = ["success", "llm_failed", "crawl_failed"]
+    labels     = ["Success", "LLM Failed", "Crawl Failed"]
+    counts     = [actionable["status"].value_counts().get(s, 0) for s in order]
+    colors     = [_PALETTE[s] for s in order]
+
+    bars = ax.barh(labels, counts, color=colors, height=0.5, edgecolor="none")
+    _bar_label(ax, bars, total)
+    ax.set_xlim(0, max(counts) * 1.38)
+    _style_ax(ax, f"5 — Pipeline Effectiveness  ({total:,} actionable leads, excl. no website)")
 
 
 def main() -> None:
@@ -167,14 +180,15 @@ def main() -> None:
     df = load(csv_path)
     print(f"{len(df):,} leads loaded\n")
 
-    # Build all 4 axes in a single tall figure, one chart per row
-    fig, axes = plt.subplots(nrows=4, ncols=1, figsize=(11, 22))
+    # Build all 5 axes in a single tall figure, one chart per row
+    fig, axes = plt.subplots(nrows=5, ncols=1, figsize=(11, 27))
     fig.subplots_adjust(hspace=0.55)
 
-    _draw_pipeline_status(df, axes[0])
-    _draw_owner_name(df,      axes[1])
-    _draw_confidence(df,      axes[2])
-    _draw_email_coverage(df,  axes[3])
+    _draw_pipeline_status(df,            axes[0])
+    _draw_owner_name(df,                 axes[1])
+    _draw_confidence(df,                 axes[2])
+    _draw_email_coverage(df,             axes[3])
+    _draw_pipeline_effectiveness(df,     axes[4])
 
     out_path = csv_path.replace(".csv", "_charts.png")
     fig.savefig(out_path, dpi=150, bbox_inches="tight", facecolor="white")
