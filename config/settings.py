@@ -20,6 +20,8 @@ CRAWL_MAX_DEPTH: int = int(os.getenv("CRAWL_MAX_DEPTH", "2"))
 CRAWL_MAX_PAGES: int = int(os.getenv("CRAWL_MAX_PAGES", "10"))
 CRAWL_DELAY_SECONDS: float = float(os.getenv("CRAWL_DELAY_SECONDS", "1.0"))
 REQUEST_TIMEOUT_SECONDS: int = int(os.getenv("REQUEST_TIMEOUT_SECONDS", "25"))
+CRAWL_PLAYWRIGHT_FALLBACK: bool = os.getenv("CRAWL_PLAYWRIGHT_FALLBACK", "false").lower() == "true"
+CRAWL_PLAYWRIGHT_THRESHOLD: int = int(os.getenv("CRAWL_PLAYWRIGHT_THRESHOLD", "800"))
 
 ZIP_MIN_POPULATION: int = int(os.getenv("ZIP_MIN_POPULATION", "1000"))
 

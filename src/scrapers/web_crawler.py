@@ -29,6 +29,26 @@ _BLOCKED_DOMAINS = {
     "linkedin.com", "youtube.com",
     "yelp.com", "yellowpages.com", "bbb.org",
     "google.com", "maps.google.com",
+    # Lead directories — listing the business but not owned by them
+    "homeadvisor.com", "angi.com", "angieslist.com",
+    "thumbtack.com", "porch.com", "houzz.com",
+}
+
+# National chains — have websites but no local owner info worth extracting
+_CHAIN_DOMAINS = {
+    # Big-box home improvement
+    "homedepot.com", "lowes.com", "menards.com",
+    # Hardware / tool stores
+    "harborfreight.com", "acehardware.com", "truevalue.com",
+    # Farm / tractor supply
+    "tractorsupply.com",
+    # National plumbing & drain chains
+    "rotorooter.com", "mrrooter.com", "rooterman.com",
+    "benjaminfranklinplumbing.com",
+    # National home services & handyman franchises
+    "servpro.com", "servicemasterrestore.com", "servicemaster.com",
+    "searshomeservices.com", "sears.com",
+    "acehandymanservices.com", "mrhandyman.com",
 }
 
 
@@ -41,10 +61,21 @@ def is_social_or_directory_url(url: str) -> bool:
         return False
 
 
+def is_chain_business_url(url: str) -> bool:
+    """Return True if the URL belongs to a national chain with no local owner info to extract."""
+    try:
+        domain = urlparse(url).netloc.lower().lstrip("www.")
+        return any(domain == chain or domain.endswith("." + chain) for chain in _CHAIN_DOMAINS)
+    except Exception:
+        return False
+
+
 async def crawl_domain(start_url: str) -> str:
     """
     Crawls start_url and same-domain links up to CRAWL_MAX_DEPTH.
     Returns concatenated visible text from all crawled pages (truncated to ~50k chars).
+    If CRAWL_PLAYWRIGHT_FALLBACK is enabled, pages where httpx yields thin text are
+    retried with a headless Chromium browser to handle JS-rendered sites.
     """
     base = _normalize_url(start_url)
     if not base:
@@ -55,10 +86,21 @@ async def crawl_domain(start_url: str) -> str:
         logger.info(f"Skipping blocked domain: {domain}")
         return ""
 
-    visited: Set[str] = set()
-    queue: List[tuple[str, int]] = []
+    if settings.CRAWL_PLAYWRIGHT_FALLBACK:
+        from playwright.async_api import async_playwright
+        async with async_playwright() as pw:
+            browser = await pw.chromium.launch(headless=True)
+            try:
+                return await _crawl_pages(base, domain, browser)
+            finally:
+                await browser.close()
+    else:
+        return await _crawl_pages(base, domain, None)
 
-    queue.append((base, 0))
+
+async def _crawl_pages(base: str, domain: str, browser) -> str:
+    visited: Set[str] = set()
+    queue: List[tuple[str, int]] = [(base, 0)]
     for path in _PRIORITY_PATHS:
         queue.append((urljoin(base, path), 1))
 
@@ -80,7 +122,7 @@ async def crawl_domain(start_url: str) -> str:
             visited.add(url)
             logger.debug(f"Crawling [{depth}] {url}")
 
-            html, ok = await _fetch(client, url)
+            html, ok = await _fetch(client, url, browser)
             if not ok:
                 continue
 
@@ -100,11 +142,22 @@ async def crawl_domain(start_url: str) -> str:
         f"[PAGE: {url}]\n{text}" for url, text in page_texts.items()
     )
     logger.info(f"Crawled {len(page_texts)} pages from {domain} ({len(combined)} chars)")
-
     return combined[:50_000]
 
 
-async def _fetch(client: httpx.AsyncClient, url: str) -> tuple[str, bool]:
+async def _fetch(client: httpx.AsyncClient, url: str, browser) -> tuple[str, bool]:
+    html, ok = await _httpx_fetch(client, url)
+    if ok and browser is not None:
+        text = _extract_text(html)
+        if len(text) < settings.CRAWL_PLAYWRIGHT_THRESHOLD:
+            logger.debug(f"Playwright fallback [{len(text)} chars] {url}")
+            pw_html, pw_ok = await _playwright_fetch(browser, url)
+            if pw_ok:
+                return pw_html, True
+    return html, ok
+
+
+async def _httpx_fetch(client: httpx.AsyncClient, url: str) -> tuple[str, bool]:
     try:
         resp = await client.get(url)
         if resp.status_code == 200:
@@ -116,6 +169,24 @@ async def _fetch(client: httpx.AsyncClient, url: str) -> tuple[str, bool]:
     except httpx.RequestError as exc:
         logger.debug(f"Fetch error {url}: {exc}")
         return "", False
+
+
+async def _playwright_fetch(browser, url: str) -> tuple[str, bool]:
+    page = None
+    try:
+        page = await browser.new_page()
+        await page.goto(url, wait_until="networkidle", timeout=20_000)
+        html = await page.content()
+        return html, True
+    except Exception as exc:
+        logger.debug(f"Playwright error {url}: {exc}")
+        return "", False
+    finally:
+        if page:
+            try:
+                await page.close()
+            except Exception:
+                pass
 
 
 def _extract_text(html: str) -> str:

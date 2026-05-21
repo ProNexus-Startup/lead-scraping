@@ -122,11 +122,11 @@ Examples are "Owner", "Founded by", "Owned and operated by", "President & Owner"
 "Meet our founder" — but others may apply. Use your best judgement.
 2. Person whose last name matches the business name (e.g. "Smith's HVAC" → last name Smith)
 3. Only person named on the site in an owner-voice context (About Us, Our Story, signed letter)
-4. If no owner can be identified, find any top decision maker at the business \
-(general manager, director, principal — the most senior person available)
+4. If no owner can be identified, find any named person associated with the business — \
+manager, lead technician, or any employee named on the site. A named contact enables \
+personalized outreach ("Hi [name],") even if they are not the owner. Assign LOW confidence.
 
-MUST NOT pick: customers, reviewers, award recipients, brand names, product names, \
-employees whose stated role is not owner (manager, technician, receptionist).
+MUST NOT pick: customers, reviewers, award recipients, brand names, or product names.
 
 **Confidence — use exactly one of: HIGH, MEDIUM, LOW**
 
