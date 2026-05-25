@@ -9,7 +9,7 @@ import config.settings as settings
 from src.extractors.llm_extractor import extract_owner
 from src.models.lead import Lead
 from src.scrapers.maps_scraper import search_businesses
-from src.scrapers.web_crawler import crawl_domain, is_social_or_directory_url
+from src.scrapers.web_crawler import crawl_domain, is_chain_business_url, is_social_or_directory_url
 from src.utils.csv_writer import append_leads_csv, init_csv, write_leads_csv
 from src.utils.logger import get_logger
 from src.utils.progress_tracker import ProgressTracker
@@ -70,6 +70,11 @@ async def _process_lead(lead: Lead, semaphore: asyncio.Semaphore) -> None:
             logger.info(f"  Social/directory URL listed as website for {lead.business_name}: {lead.website}")
             return
 
+        if is_chain_business_url(lead.website):
+            lead.status = "no_website"
+            logger.info(f"  National chain skipped for {lead.business_name}: {lead.website}")
+            return
+
         logger.info(f"  Crawling {lead.website}")
         try:
             page_text = await crawl_domain(lead.website)
@@ -105,7 +110,8 @@ async def _process_lead(lead: Lead, semaphore: asyncio.Semaphore) -> None:
         lead.llm_confidence                 = result.get("confidence")
         lead.llm_reasoning                  = result.get("reasoning")
 
-        if lead.owner_name or lead.email_owner_personal or lead.email_owner_likely:
+        has_email = lead.email_owner_personal or lead.email_owner_likely or lead.email_generic
+        if lead.owner_name and has_email:
             lead.status = "success"
             logger.info(
                 f"  Found: {lead.owner_name} <{lead.recommended_email}> "
